@@ -51,19 +51,22 @@ public struct Contract: Sendable {
         for part in schema["allOf"].array ?? [] { try validate(value, against: part, depth: depth + 1) }
         if let constant = schema.object?["const"] { try failUnless(value == constant) }
         if let options = schema["enum"].array { try failUnless(options.contains(value)) }
-        if let kind = schema["type"].string {
-            let matches: Bool
+        func matchesType(_ kind: String) throws -> Bool {
             switch kind {
-            case "null": matches = value == .null
-            case "string": matches = value.string != nil
-            case "integer": matches = value.integer != nil
-            case "number": matches = value.number != nil
-            case "boolean": matches = value.bool != nil
-            case "object": matches = value.object != nil
-            case "array": matches = value.array != nil
+            case "null": return value == .null
+            case "string": return value.string != nil
+            case "integer": return value.integer != nil
+            case "number": return value.number != nil
+            case "boolean": return value.bool != nil
+            case "object": return value.object != nil
+            case "array": return value.array != nil
             default: throw ClientError.invalidContract
             }
-            try failUnless(matches)
+        }
+        if let kind = schema["type"].string { try failUnless(matchesType(kind)) }
+        if let kinds = schema["type"].array {
+            let matching = try kinds.map { try matchesType($0.string ?? "") }
+            try failUnless(matching.contains(true))
         }
         if let object = value.object {
             for field in schema["required"].array ?? [] { try failUnless(object[field.string ?? ""] != nil) }

@@ -62,6 +62,23 @@ actor MockTransport: HTTPTransport {
     #expect(throws: ClientError.self) { try decoder.consume(line: "", serverID: serverID) }
     var malformed = payload; malformed["contract_version"] = 2
     #expect(throws: ClientError.self) { try Contract.current.validate(JSONDecoder().decode(JSONValue.self, from: jsonData(malformed)), named: "ProductEvent") }
+    var invalidType = try JSONDecoder().decode(JSONValue.self, from: infoResponse().data)["data"]["maintenance"].object!
+    invalidType["kind"] = .integer(5)
+    #expect(throws: ClientError.self) { try Contract.current.validate(.object(invalidType), named: "GatewayMaintenanceStatus") }
+}
+
+@Test func explicitModelSetupFailureKeepsTheJournal() async throws {
+    let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+    defer { try? FileManager.default.removeItem(at: root) }
+    let journal = LocalState(root: root, credential: try credential())
+    let pending = OutgoingTurn(request: Wire.UserMessageRequest(client_turn_id: "t", message: "Hello", session_id: "s"), dataEpoch: dataEpoch)
+    let rejected = HTTPResponse(status: 200, data: try jsonData(["success": false, "message": "Not ready", "data": ["error_code": "RUNTIME_NOT_READY"]]))
+    let absent = HTTPResponse(status: 200, data: try jsonData(["session_id": "s", "identity": "t", "status": "absent", "safe_to_retry": true]))
+    let transport = MockTransport([.response(try infoResponse()), .response(rejected), .response(absent)])
+    let client = MagiClient(credential: try credential(), transport: transport)
+    await #expect(throws: ClientError.runtimeNotReady) { try await TurnDelivery.deliver(pending, client: client, journal: journal) }
+    #expect(try await journal.read().outgoing.first?.attempted == true)
+    #expect(try await journal.read().outgoing.first?.confirmed == false)
 }
 
 @Test func serviceVersionMustMatchExactly() async throws {

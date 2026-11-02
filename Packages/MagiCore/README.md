@@ -21,3 +21,14 @@ swift test --package-path Packages/MagiCore
 
 The unit tests inject a transport. They prove protocol handling and delivery
 recovery, not a live model response or a deployed service connection.
+
+Run the separate real-service boundary test against a temporary data directory:
+
+```sh
+python3 scripts/test-real-service.py --magi ../magi --executable ../magi/target/debug/magi-server
+```
+
+This exercises pairing, token exchange, session idempotency, history, turn
+confirmation, product events, attachment upload, tasks, notifications, and
+retirement. The isolated service has no model key; the test explicitly verifies
+`RUNTIME_NOT_READY` and an absent receipt. It does not claim successful model inference.

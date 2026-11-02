@@ -99,7 +99,7 @@ public enum TurnDelivery {
         guard let sessionID = turn.request.session_id, let turnID = turn.request.client_turn_id,
               !sessionID.isEmpty, !turnID.isEmpty else { throw ClientError.invalidContract }
         let info = try await client.info()
-        guard info.service_ready else { throw ClientError.serviceUnavailable }
+        guard info.service_ready, ["idle", "completed"].contains(info.maintenance?.phase ?? "") else { throw ClientError.serviceUnavailable }
         guard info.maintenance?.data_epoch == turn.dataEpoch else { throw ClientError.expiredGeneration }
         if turn.attempted {
             let confirmation = try await client.confirmation(sessionID: sessionID, turnID: turnID)
@@ -111,12 +111,14 @@ public enum TurnDelivery {
         }
         turn.attempted = true
         try await journal.put(turn)
+        var modelSetupRequired = false
         do {
             let receipt = try await client.send(turn.request)
             if receipt.success, receipt.data?["session_id"]?.string == sessionID,
                receipt.data?["turn_id"]?.string == turnID {
                 turn.confirmed = true; try await journal.put(turn); return .confirmed
             }
+            modelSetupRequired = !receipt.success && receipt.data?["error_code"]?.string == "RUNTIME_NOT_READY"
         } catch {
             if error is CancellationError { throw error }
         }
@@ -124,6 +126,7 @@ public enum TurnDelivery {
         if confirmation.status == "confirmed" {
             turn.confirmed = true; try await journal.put(turn); return .confirmed
         }
+        if modelSetupRequired && confirmation.safe_to_retry { throw ClientError.runtimeNotReady }
         return confirmation.status == "concluded" ? .concluded : .uncertain
     }
 }

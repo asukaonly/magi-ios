@@ -47,7 +47,7 @@ public indirect enum JSONValue: Codable, Sendable, Equatable {
 public enum ClientError: Error, LocalizedError, Sendable, Equatable {
     case invalidAddress, invalidPairingCode, invalidContract, unsupportedProtocol, identityChanged
     case unauthorized, serviceUnavailable, invalidResponse, responseTooLarge, expiredGeneration
-    case http(Int), offline, storage, conflict
+    case http(Int), offline, storage, conflict, runtimeNotReady
 
     public var errorDescription: String? {
         switch self {
@@ -58,6 +58,7 @@ public enum ClientError: Error, LocalizedError, Sendable, Equatable {
         case .identityChanged: "The server identity changed."
         case .unauthorized: "Pair this device again."
         case .serviceUnavailable: "The service is not ready."
+        case .runtimeNotReady: "Configure the service's model before sending messages."
         case .invalidResponse: "The server returned an invalid response."
         case .responseTooLarge: "The response exceeds the size limit."
         case .expiredGeneration: "The service data changed. This pending message cannot be resent."
