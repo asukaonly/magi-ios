@@ -13,6 +13,10 @@ import XCTest
         XCTAssertEqual((response as? HTTPURLResponse)?.statusCode, 200)
         return try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: Any])
     }
+    private func capture(_ name: String, in app: XCUIApplication) {
+        let attachment = XCTAttachment(screenshot: app.screenshot())
+        attachment.name = name; attachment.lifetime = .keepAlways; add(attachment)
+    }
     private func connect(_ app: XCUIApplication) {
         let address = app.textFields["connection.address"]
         XCTAssertTrue(address.waitForExistence(timeout: 10))
@@ -160,6 +164,7 @@ import XCTest
         app.tabBars.buttons["Memory"].tap()
         let memory = app.buttons["memory.item.walking"]
         XCTAssertTrue(memory.waitForExistence(timeout: 8))
+        capture("Memory overview", in: app)
         memory.tap()
         XCTAssertTrue(app.staticTexts["You enjoy evening walks."].waitForExistence(timeout: 5))
         XCTAssertTrue(app.buttons.containing(NSPredicate(format: "label CONTAINS %@", "An evening walk by the river.")).firstMatch.waitForExistence(timeout: 5))
@@ -168,6 +173,7 @@ import XCTest
         app.tabBars.buttons["Extensions"].tap()
         let extensionRow = app.buttons.containing(NSPredicate(format: "label CONTAINS %@", "Apple Health")).firstMatch
         XCTAssertTrue(extensionRow.waitForExistence(timeout: 8))
+        capture("Extension marketplace", in: app)
         extensionRow.tap()
         XCTAssertTrue(app.buttons["health.open"].waitForExistence(timeout: 8))
         app.buttons["health.open"].tap()
@@ -183,6 +189,7 @@ import XCTest
         _ = try await fixture("reset")
         let app = start(language: "zh-Hans")
         XCTAssertTrue(app.staticTexts["每天，多懂你一点。"].waitForExistence(timeout: 8))
+        capture("Chinese connection", in: app)
         connect(app)
         XCTAssertTrue(app.tabBars.buttons["对话"].exists)
         XCTAssertTrue(app.tabBars.buttons["任务"].exists)
