@@ -31,6 +31,10 @@ func realServiceClient() async throws {
     await #expect(throws: ClientError.http(404)) {
         try await client.image(sessionID: session, attachmentID: imageID)
     }
+    let imageOnly = try await client.send(Wire.UserMessageRequest(attachments: [try #require(image.object)], client_turn_id: turnID, message: "", session_id: session))
+    #expect(!imageOnly.success)
+    #expect(imageOnly.data?["error_code"]?.string == "RUNTIME_NOT_READY")
+    #expect(try await client.confirmation(sessionID: session, turnID: turnID).safe_to_retry)
     let stream = try await client.openEvents(after: nil)
     var decoder = EventStream()
     var received = false
