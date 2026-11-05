@@ -1,6 +1,14 @@
 import SwiftUI
 import MagiCore
 
+extension Color {
+    static let canvas = Color(uiColor: UIColor { $0.userInterfaceStyle == .dark
+        ? UIColor(red: 0.09, green: 0.09, blue: 0.085, alpha: 1)
+        : UIColor(red: 0.975, green: 0.969, blue: 0.951, alpha: 1) })
+    static let paper = Color(uiColor: UIColor { $0.userInterfaceStyle == .dark
+        ? UIColor(white: 0.16, alpha: 1) : UIColor(white: 1, alpha: 1) })
+}
+
 struct RootView: View {
     @Environment(AppStore.self) private var store
     var body: some View {
@@ -8,17 +16,24 @@ struct RootView: View {
         Group {
             if store.hasConnection {
                 TabView {
-                    ConversationsView().tabItem { Label("tab.conversations", systemImage: "bubble.left.and.bubble.right") }
+                    ChatHome().tabItem { Label("tab.conversations", systemImage: "bubble.left") }
+                    MemoryView().tabItem { Label("tab.memory", systemImage: "sparkles") }
                     TasksView().tabItem { Label("tab.tasks", systemImage: "checkmark.circle") }
-                    NotificationsView().tabItem { Label("tab.notifications", systemImage: "bell") }.badge(store.unreadCount)
-                }
+                    ExtensionsView().tabItem { Label("tab.extensions", systemImage: "square.grid.2x2") }
+                }.id(store.connectionGeneration).background(Color.canvas)
             } else { NavigationStack { ConnectionView() } }
         }
         .sheet(isPresented: $store.showConnection) { NavigationStack { ConnectionView() } }
+        .sheet(isPresented: $store.showNotifications) { NotificationsView() }
         .alert(L("error.title"), isPresented: Binding(get: { store.errorKey != nil }, set: { if !$0 { store.errorKey = nil } })) {
             Button("action.ok", role: .cancel) { store.errorKey = nil }
         } message: { Text(L(store.errorKey ?? "error.network")) }
     }
+}
+
+struct MagiMark: View {
+    var size: CGFloat = 44
+    var body: some View { Image("MagiMark").resizable().scaledToFit().frame(width: size, height: size).accessibilityHidden(true) }
 }
 
 struct ConnectionView: View {
@@ -26,62 +41,71 @@ struct ConnectionView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var address = ""
     @State private var code = ""
+    @State private var help = false
     @State private var confirmDisconnect = false
+    private enum Field { case address, code }
+    @FocusState private var focused: Field?
     var body: some View {
-        Form {
-            if store.hasConnection {
-                Section {
-                    Label(store.address, systemImage: "server.rack").font(.subheadline).textSelection(.enabled)
-                    ConnectionStatus()
-                } header: { Text("connection.current") }
-                Section {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 32) {
+                if store.hasConnection {
+                    Text(store.address).font(.body).textSelection(.enabled)
+                    ConnectionStatus(showOnline: true)
                     Button("connection.disconnect", role: .destructive) { confirmDisconnect = true }
-                } footer: { Text("connection.disconnect.help") }
-            } else {
-                Section {
-                    VStack(alignment: .leading, spacing: 12) {
-                        Image(systemName: "sparkle").font(.system(size: 38, weight: .medium)).foregroundStyle(Color.magi)
-                        Text("welcome.title").font(.largeTitle.bold())
-                        Text("welcome.body").foregroundStyle(.secondary)
-                    }.padding(.vertical, 16)
-                }.listRowBackground(Color.clear)
-                Section {
-                    TextField("connection.address", text: $address)
-                        .keyboardType(.URL).textContentType(.URL).textInputAutocapitalization(.never).autocorrectionDisabled()
-                        .accessibilityIdentifier("connection.address")
-                    SecureField("connection.code", text: $code)
-                        .textInputAutocapitalization(.never).autocorrectionDisabled()
-                        .accessibilityIdentifier("connection.code")
-                } header: { Text("connection.server") } footer: { Text("connection.help") }
-                Section {
+                } else {
+                    VStack(alignment: .leading, spacing: 18) {
+                        MagiMark(size: focused == nil ? 72 : 32)
+                        if focused == nil {
+                            Text("Magi").font(.system(size: 38, weight: .semibold, design: .rounded))
+                            Text("welcome.title").font(.title3).foregroundStyle(.secondary)
+                        }
+                    }.padding(.top, focused == nil ? 48 : 0).padding(.bottom, focused == nil ? 28 : 0)
+                    VStack(spacing: 0) {
+                        TextField("connection.address", text: $address)
+                            .keyboardType(.URL).textContentType(.URL).textInputAutocapitalization(.never).autocorrectionDisabled()
+                            .focused($focused, equals: .address).submitLabel(.next).onSubmit { focused = .code }
+                            .accessibilityIdentifier("connection.address").padding(18)
+                        Divider().padding(.horizontal, 18)
+                        SecureField("connection.code", text: $code)
+                            .textInputAutocapitalization(.never).autocorrectionDisabled()
+                            .focused($focused, equals: .code).submitLabel(.go).onSubmit { connect() }
+                            .accessibilityIdentifier("connection.code").padding(18)
+                    }.background(Color.paper, in: RoundedRectangle(cornerRadius: 18))
                     Button {
-                        Task {
-                            await store.connect(address: address, code: code)
-                            if store.hasConnection { code = "" }
-                        }
+                        connect()
                     } label: {
-                        HStack {
-                            Text("connection.connect").fontWeight(.semibold)
-                            Spacer()
-                            if store.phase == .connecting { ProgressView() }
-                            else { Image(systemName: "arrow.right") }
-                        }
+                        HStack { Spacer(); if store.phase == .connecting { ProgressView() } else { Text("connection.connect").fontWeight(.semibold) }; Spacer() }
+                            .padding(.vertical, 17)
                     }
+                    .buttonStyle(.plain).background(Color.magi, in: RoundedRectangle(cornerRadius: 18)).foregroundStyle(Color.canvas)
                     .disabled(address.isEmpty || code.isEmpty || store.phase == .connecting)
-                    .accessibilityIdentifier("connection.connect")
+                    .opacity(address.isEmpty || code.isEmpty ? 0.5 : 1).accessibilityIdentifier("connection.connect")
+                    Button("connection.help.title") { help = true }.font(.footnote).foregroundStyle(.secondary).frame(maxWidth: .infinity)
                 }
-            }
-            Section { Text("connection.privacy").font(.footnote).foregroundStyle(.secondary) }
+            }.padding(28).frame(maxWidth: 520)
         }
-        .navigationTitle(store.hasConnection ? L("connection.title") : "Magi")
+        .frame(maxWidth: .infinity).background(Color.canvas)
+        .navigationTitle(store.hasConnection ? L("connection.title") : "").navigationBarTitleDisplayMode(.inline)
         .toolbar { if store.hasConnection { ToolbarItem(placement: .confirmationAction) { Button("action.done") { dismiss() } } } }
+        .sheet(isPresented: $help) {
+            NavigationStack {
+                VStack(alignment: .leading, spacing: 24) { Text("connection.help"); Text("connection.privacy").foregroundStyle(.secondary); Spacer() }.padding(28)
+                    .navigationTitle("connection.help.title").navigationBarTitleDisplayMode(.inline)
+                    .toolbar { ToolbarItem(placement: .confirmationAction) { Button("action.done") { help = false } } }
+            }.presentationDetents([.medium])
+        }
         .confirmationDialog("connection.disconnect.confirm", isPresented: $confirmDisconnect, titleVisibility: .visible) {
             Button("connection.disconnect", role: .destructive) { Task { await store.disconnect(); dismiss() } }
         } message: { Text("connection.disconnect.help") }
     }
+    private func connect() {
+        focused = nil
+        Task { await store.connect(address: address, code: code); if store.hasConnection { code = "" } }
+    }
 }
 
 struct ConnectionStatus: View {
+    var showOnline = false
     @Environment(AppStore.self) private var store
     private var key: String {
         switch store.phase {
@@ -93,82 +117,91 @@ struct ConnectionStatus: View {
         }
     }
     var body: some View {
-        HStack(spacing: 8) {
-            Circle().fill(store.phase == .online ? Color.magi : Color.orange).frame(width: 7, height: 7)
-            Text(L(key)).font(.caption).foregroundStyle(.secondary)
-            if store.phase == .offline { Button("action.retry") { Task { await store.refresh() } }.font(.caption) }
-        }.accessibilityElement(children: .combine)
+        if showOnline || store.phase != .online {
+            HStack(spacing: 8) {
+                Circle().fill(Color.magi.opacity(0.5)).frame(width: 5, height: 5)
+                Text(L(key)).font(.caption).foregroundStyle(.secondary)
+                if store.phase == .offline { Button("action.retry") { Task { await store.refresh() } }.font(.caption) }
+            }.accessibilityElement(children: .contain)
+        }
     }
 }
 
-struct ConnectionToolbar: ToolbarContent {
+struct AppToolbar: ToolbarContent {
     @Environment(AppStore.self) private var store
     var body: some ToolbarContent {
-        ToolbarItem(placement: .topBarLeading) {
-            Button { store.showConnection = true } label: { Image(systemName: "gearshape") }
-                .accessibilityLabel(Text("connection.title")).accessibilityIdentifier("connection.settings")
+        ToolbarItem(placement: .topBarTrailing) {
+            Button { store.showNotifications = true } label: {
+                Image(systemName: "bell").overlay(alignment: .topTrailing) {
+                    if store.unreadCount > 0 { Circle().fill(Color.magi).frame(width: 5, height: 5).offset(x: 3, y: -2) }
+                }
+            }.accessibilityLabel(Text("tab.notifications")).accessibilityIdentifier("notifications.open")
+        }
+        ToolbarItem(placement: .topBarTrailing) {
+            Menu {
+                Button("action.refresh", systemImage: "arrow.clockwise") { Task { await store.refresh() } }
+                Button("connection.title", systemImage: "gearshape") { store.showConnection = true }
+            } label: { Image(systemName: "ellipsis") }.accessibilityLabel(Text("action.menu")).accessibilityIdentifier("app.menu")
         }
     }
 }
 
-struct ConversationsView: View {
+struct ChatHome: View {
     @Environment(AppStore.self) private var store
-    @State private var path: [String] = []
+    @State private var history = false
     var body: some View {
-        NavigationStack(path: $path) {
-            List {
-                Section {
-                    ConnectionStatus()
-                    if store.localEpochChanged { Label("connection.reset", systemImage: "arrow.triangle.2.circlepath").font(.footnote) }
-                }.listRowBackground(Color.clear)
-                if store.sessions.isEmpty {
-                    ContentUnavailableView("conversations.empty", systemImage: "bubble.left.and.bubble.right", description: Text("conversations.empty.help"))
-                        .listRowBackground(Color.clear)
-                }
-                Section {
-                    ForEach(store.sessions, id: \.session_id) { session in
-                        NavigationLink(value: session.session_id) {
-                            VStack(alignment: .leading, spacing: 6) {
-                                HStack(alignment: .firstTextBaseline) {
-                                    Text(session.title.isEmpty ? L("chat.untitled") : session.title).font(.headline).lineLimit(1)
-                                    Spacer(minLength: 4)
-                                    Text(Date(timeIntervalSince1970: Double(session.last_timestamp) / 1000), style: .date)
-                                        .font(.caption2).foregroundStyle(.secondary)
-                                }
-                                Text(session.last_message_preview.isEmpty ? L("chat.start") : session.last_message_preview)
-                                    .font(.subheadline).foregroundStyle(.secondary).lineLimit(2)
-                            }.padding(.vertical, 6)
-                        }.accessibilityIdentifier("session.\(session.session_id)")
-                    }
-                    if store.sessionBefore != nil { Button("action.more") { Task { await store.loadMoreSessions() } } }
-                }
-                if !store.outgoing.isEmpty {
-                    Section("outgoing.title") {
-                        ForEach(store.outgoing) { pending in PendingTurnView(pending: pending) }
-                    }
+        NavigationStack {
+            Group {
+                if let id = store.selectedSessionID { ChatView(sessionID: id).id(id) }
+                else {
+                    VStack(spacing: 24) {
+                        MagiMark(size: 56)
+                        Text("chat.start").font(.title2.weight(.medium))
+                        Button("conversations.new") { Task { await store.newSession() } }.buttonStyle(.bordered)
+                            .disabled(store.phase != .online || store.isCreating)
+                    }.frame(maxWidth: .infinity, maxHeight: .infinity).background(Color.canvas)
                 }
             }
-            .navigationTitle("tab.conversations")
-            .refreshable { await store.refresh() }
             .toolbar {
-                ConnectionToolbar()
+                ToolbarItem(placement: .topBarLeading) { Button { history = true } label: { Image(systemName: "line.3.horizontal") }.accessibilityLabel(Text("conversations.history")).accessibilityIdentifier("chat.history") }
+                ToolbarItem(placement: .principal) { HStack(spacing: 8) { MagiMark(size: 24); Text("Magi").font(.headline) } }
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        Task {
-                            await store.newSession()
-                            if let id = store.selectedSessionID { path = [id] }
-                        }
-                    } label: { if store.isCreating { ProgressView() } else { Image(systemName: "square.and.pencil") } }
-                    .disabled(store.phase != .online || store.isCreating)
-                    .accessibilityLabel(Text("conversations.new")).accessibilityIdentifier("conversations.new")
+                    Button { Task { await store.newSession() } } label: { Image(systemName: "square.and.pencil") }
+                        .disabled(store.phase != .online || store.isCreating).accessibilityLabel(Text("conversations.new")).accessibilityIdentifier("conversations.new")
                 }
+                AppToolbar()
             }
-            .navigationDestination(for: String.self) { id in ChatView(sessionID: id) }
-            .onChange(of: store.dataEpoch) { before, after in if before != nil && before != after { path = [] } }
         }
+        .sheet(isPresented: $history) { ConversationHistory() }
     }
 }
 
+struct ConversationHistory: View {
+    @Environment(AppStore.self) private var store
+    @Environment(\.dismiss) private var dismiss
+    var body: some View {
+        NavigationStack {
+            List {
+                ForEach(store.sessions, id: \.session_id) { session in
+                    Button {
+                        Task { await store.select(session.session_id); dismiss() }
+                    } label: {
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text(session.title.isEmpty || ["New conversation", "New Session"].contains(session.title)
+                                 ? (session.last_user_message_preview.isEmpty ? L("chat.untitled") : session.last_user_message_preview) : session.title)
+                                .font(.body.weight(.medium)).lineLimit(1)
+                            Text(session.last_message_preview).font(.subheadline).foregroundStyle(.secondary).lineLimit(2)
+                        }.padding(.vertical, 8).frame(maxWidth: .infinity, alignment: .leading)
+                    }.listRowBackground(Color.clear).accessibilityIdentifier("session.\(session.session_id)")
+                }
+                if store.sessionBefore != nil { Button("action.more") { Task { await store.loadMoreSessions() } } }
+            }
+            .listStyle(.plain).scrollContentBackground(.hidden).background(Color.canvas)
+            .navigationTitle("conversations.history").navigationBarTitleDisplayMode(.inline)
+            .toolbar { ToolbarItem(placement: .confirmationAction) { Button("action.done") { dismiss() } } }
+        }
+    }
+}
 struct TasksView: View {
     @Environment(AppStore.self) private var store
     @State private var completing = Set<String>()
@@ -176,7 +209,6 @@ struct TasksView: View {
         NavigationStack {
             List {
                 Section {
-                    ConnectionStatus()
                     Picker("tasks.view", selection: Binding(get: { store.taskView }, set: { view in Task { await store.chooseTaskView(view) } })) {
                         Text("tasks.next").tag("next")
                         Text("tasks.inbox").tag("inbox")
@@ -205,19 +237,20 @@ struct TasksView: View {
                     }.padding(.vertical, 6)
                 }
             }
-            .navigationTitle("tab.tasks").refreshable { await store.refresh() }
-            .toolbar { ConnectionToolbar() }
+            .listStyle(.plain).scrollContentBackground(.hidden).background(Color.canvas)
+            .navigationTitle("tab.tasks").navigationBarTitleDisplayMode(.inline).refreshable { await store.refresh() }
+            .toolbar { AppToolbar() }
         }
     }
 }
 
 struct NotificationsView: View {
     @Environment(AppStore.self) private var store
+    @Environment(\.dismiss) private var dismiss
     @State private var marking = Set<Int64>()
     var body: some View {
         NavigationStack {
             List {
-                Section { ConnectionStatus() }.listRowBackground(Color.clear)
                 if store.notifications.isEmpty {
                     ContentUnavailableView("notifications.empty", systemImage: "bell", description: Text("notifications.empty.help"))
                         .listRowBackground(Color.clear)
@@ -242,8 +275,9 @@ struct NotificationsView: View {
                     }.padding(.vertical, 6)
                 }
             }
-            .navigationTitle("tab.notifications").refreshable { await store.refresh() }
-            .toolbar { ConnectionToolbar() }
+            .listStyle(.plain).scrollContentBackground(.hidden).background(Color.canvas)
+            .navigationTitle("tab.notifications").navigationBarTitleDisplayMode(.inline).refreshable { await store.refresh() }
+            .toolbar { ToolbarItem(placement: .confirmationAction) { Button("action.done") { dismiss() } } }
         }
     }
 }

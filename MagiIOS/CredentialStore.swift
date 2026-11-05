@@ -3,10 +3,11 @@ import Security
 import MagiCore
 
 struct CredentialStore {
+    var account = "primary"
     private let service = "com.asuka.magi.ios.connection"
     private var query: [String: Any] {
         [kSecClass as String: kSecClassGenericPassword, kSecAttrService as String: service,
-         kSecAttrAccount as String: "primary", kSecAttrSynchronizable as String: false]
+         kSecAttrAccount as String: account, kSecAttrSynchronizable as String: false]
     }
     func load() throws -> ConnectionCredential? {
         var request = query

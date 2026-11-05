@@ -1,3 +1,5 @@
 "NSLocalNetworkUsageDescription" = "Connect to your own Magi service on your network.";
 
 "NSCameraUsageDescription" = "Take a photo to send to Magi.";
+
+"NSHealthShareUsageDescription" = "Read the steps, sleep and workouts you choose to share with your Magi service.";

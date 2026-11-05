@@ -1,3 +1,5 @@
 "NSLocalNetworkUsageDescription" = "连接你网络中的 Magi 服务。";
 
 "NSCameraUsageDescription" = "拍摄照片并发送给 Magi。";
+
+"NSHealthShareUsageDescription" = "读取你选择分享给 Magi 的步数、睡眠和运动记录。";

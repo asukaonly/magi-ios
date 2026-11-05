@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Loopback-only, deterministic UI fixture. Never used by the application runtime."""
 import json
+from email.parser import BytesParser
+from email.policy import default
 from pathlib import Path
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import threading
@@ -21,7 +23,7 @@ def now():
 
 def reset():
     state.clear()
-    state.update(sequence=0, sends=0, ask=False, permission=False, task=False, read=False, offline=False,
+    state.update(image_sends=[], uploads=0, memory_corrected=False, memory_deleted=False, sequence=0, sends=0, ask=False, permission=False, task=False, read=False, offline=False,
                  sessions={'fixture-session': [{'role': 'assistant', 'kind': 'message', 'content': 'What would make today a good day?',
                                                 'timestamp': now(), 'message_id': 'welcome', 'message_kind': 'assistant_final'}]})
 
@@ -57,6 +59,9 @@ class Handler(BaseHTTPRequestHandler):
         except (BrokenPipeError, ConnectionResetError):
             pass
 
+    def do_DELETE(self):
+        self.route("DELETE")
+
     def do_POST(self):
         try:
             self.route('POST')
@@ -66,7 +71,13 @@ class Handler(BaseHTTPRequestHandler):
     def route(self, method):
         url = urlsplit(self.path)
         path, query = url.path, parse_qs(url.query)
-        body = json.loads(self.rfile.read(int(self.headers.get('Content-Length', '0'))) or '{}')
+        raw_body = self.rfile.read(int(self.headers.get('Content-Length', '0')))
+        multipart = None
+        if self.headers.get('Content-Type', '').startswith('multipart/form-data'):
+            multipart = BytesParser(policy=default).parsebytes(('Content-Type: ' + self.headers['Content-Type'] + '\r\n\r\n').encode() + raw_body)
+            body = {}
+        else:
+            body = json.loads(raw_body or '{}')
         if path == '/api/events':
             if self.headers.get('x-magi-session-token') != 'fixture-access':
                 return self.respond({}, 401)
@@ -123,11 +134,41 @@ class Handler(BaseHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write(raw)
                 return
+            if path.endswith('/attachments') and method == 'POST':
+                parts = {part.get_param('name', header='Content-Disposition'): part for part in multipart.iter_parts()}
+                data = parts['file'].get_payload(decode=True)
+                assert parts['file'].get_content_type() == 'image/jpeg' and data.startswith(b'\xff\xd8')
+                state['uploads'] += 1
+                attachment = dict(attachment_id='fixture-image', kind='image', mime_type='image/jpeg', original_name=parts['file'].get_filename(), size_bytes=len(data))
+                return self.respond(dict(success=True, data=dict(session_id=path.split('/')[4], turn_id=parts['turn_id'].get_content(), attachment=attachment)))
             if path == '/api/server/info':
                 return self.respond({'success': True, 'data': dict(server_id=SERVER, protocol_version=3, service_ready=True,
                     plugin_execution='server', supervisor={}, events=dict(epoch=EPOCH, sequence=state['sequence']),
                     client_contract=dict(version=1, product_events='/api/events?scope=product', diagnostic_events='/api/events?scope=diagnostics', schema='/api/openapi.json'),
                     maintenance=dict(version=2, data_epoch=EPOCH, content_epoch=EPOCH, phase='idle', kind=None, operation_id=None, result=None, error=None))})
+            if path == '/api/memory/library':
+                about = dict(id='walking', kind='fact', text='You enjoy evening walks.', assertion_id='walking', evidence_ids=['walk-event'])
+                event = dict(id='walk-event', kind='event', text='An evening walk by the river.', timestamp=time.time(), can_delete=True, source='manual')
+                items = ([about] if not state['memory_corrected'] else []) if query.get('view', ['about'])[0] == 'about' else ([event] if not state['memory_deleted'] else [])
+                return self.respond(dict(items=items, total=len(items), limit=40, offset=0, stale=False))
+            if path == '/api/memory/library/evidence/walk-event':
+                return self.respond(dict(id='walk-event', kind='event', text='An evening walk by the river.', timestamp=time.time(), can_delete=True, source='manual'))
+            if path == '/api/memory/l2/corrections':
+                state['memory_corrected'] = True
+                return self.respond(dict(created=True, derivation_state='pending', correction=dict(correction_id='correction-1', correction_kind='record_error', created_at=time.time(), state='active')))
+            if path == '/api/memory/l1/events/walk-event' and method == 'DELETE':
+                state['memory_deleted'] = True
+                return self.respond(dict(event_id='walk-event', deleted=True, deletion_scope='source_event'))
+            if path == '/api/plugins':
+                manifest = dict(plugin_id='apple-health', name='Apple Health', version='0.1.0', description='Steps, sleep and workouts shared from your iPhone', author='Magi Team', official=True,
+                                protocol_version=2, min_sdk_version='0.2.6', execution_mode='trusted_process', settings_fields=[], contribution_types=['source'], source='external', plugin_dir='', manifest_path='',
+                                device_collectors=[dict(source_type='apple_health', capability_id='apple_health.observe', protocol='source.change.v1', schema_id='apple_health.record', schema_version=1, platforms=['ios'])])
+                return self.respond(dict(plugins=[dict(manifest=manifest, enabled=True, trusted=True, loaded=True, healthy=True, package_sha256='a'*64)], total=1))
+            if path == '/api/plugins/registry':
+                return self.respond(dict(registry_version='4', install_fingerprint='a'*64, plugins=[dict(plugin_id='apple-health', name='Apple Health', version='0.1.0', description='Steps, sleep and workouts shared from your iPhone',
+                    protocol_version=2, execution_mode='trusted_process', min_sdk_version='0.2.6', installed=True)]))
+            if path == '/api/plugins/apple-health/connections':
+                return self.respond(dict(connections=[], total=0))
             if path == '/api/messages/sessions':
                 items = [dict(session_id=k, title='A clearer day' if k == 'fixture-session' else 'New conversation',
                               last_message_preview=v[-1]['content'] if v else '', last_user_message_preview='', title_overridden=False,
@@ -145,8 +186,9 @@ class Handler(BaseHTTPRequestHandler):
                                          context_usage=None, revision=str(state['sequence']), not_modified=False, has_more=False, next_before=None))
             if path == '/api/messages/send':
                 state['sends'] += 1
+                if body.get('attachments'): state['image_sends'].append(dict(text=body['message'], count=len(body['attachments'])))
                 sid, tid, text = body['session_id'], body['client_turn_id'], body['message']
-                state['sessions'][sid] += [dict(role='user', kind='message', content=text, timestamp=now(), message_id='user-' + tid, turn_id=tid),
+                state['sessions'][sid] += [dict(role='user', kind='message', content=text, timestamp=now(), message_id='user-' + tid, turn_id=tid, attachments=body.get('attachments', [])),
                                            dict(role='assistant', kind='message', message_kind='assistant_final', content='Received: ' + text, timestamp=now()+1,
                                                 message_id='reply-' + tid, turn_id=tid)]
                 changed()

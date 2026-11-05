@@ -25,6 +25,9 @@ PY
 if [[ -z "${SIMULATOR_ID:-}" ]]; then
   SIMULATOR_ID=$(xcrun simctl list devices available --json | python3 -c 'import json,sys; print(next(d["udid"] for ds in json.load(sys.stdin)["devices"].values() for d in ds if d["name"].startswith("iPhone")))')
 fi
+xcrun simctl boot "$SIMULATOR_ID" 2>/dev/null || true
+xcrun simctl bootstatus "$SIMULATOR_ID" -b >/dev/null
+xcrun simctl addmedia "$SIMULATOR_ID" MagiIOS/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon.png
 xcodebuild -project MagiIOS.xcodeproj -scheme MagiIOS \
   -destination "platform=iOS Simulator,id=$SIMULATOR_ID" \
   -derivedDataPath "$scratch_dir/DerivedData" -resultBundlePath "$scratch_dir/Results.xcresult" \

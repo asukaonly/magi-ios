@@ -46,12 +46,16 @@ struct Interaction: Identifiable {
     var isRefreshing = false
     var isLoadingHistory = false
     var showConnection = false
+    var showNotifications = false
     var taskView = "next"
     var dataEpoch: String?
     var localEpochChanged = false
+    var productClient: MagiClient? { client }
+    var connectionGeneration: UUID { generation }
     var hasConnection: Bool { client != nil }
     var selectedTitle: String { sessions.first { $0.session_id == selectedSessionID }?.title ?? "" }
     var canSend: Bool { phase == .online && !isSending && !isPreparingImages && selectedSessionID != nil && interactions.isEmpty && (!draft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || !attachments.isEmpty) }
+    private(set) var health: HealthStore?
     private var client: MagiClient?
     private var journal: LocalState?
     private var generation = UUID()
@@ -83,11 +87,12 @@ struct Interaction: Identifiable {
         client = MagiClient(credential: credential)
         address = credential.address.baseURL.absoluteString
         let root = try FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true).appendingPathComponent("Magi", isDirectory: true)
+        if let client { health = HealthStore(owner: client, credential: credential, root: root) }
         let local = LocalState(root: root, credential: credential)
         journal = local
         let cache = try await local.read()
         sessions = cache.sessions; outgoing = cache.outgoing; dataEpoch = cache.dataEpoch
-        if let first = sessions.first { selectedSessionID = first.session_id; messages = cache.transcripts[first.session_id] ?? [] }
+        if let id = cache.selectedSessionID ?? sessions.first?.session_id { selectedSessionID = id; messages = cache.transcripts[id] ?? [] }
         phase = .connecting
     }
     func connect(address raw: String, code: String) async {
@@ -104,13 +109,14 @@ struct Interaction: Identifiable {
     }
     func disconnect() async {
         generation = UUID(); stopStreams()
-        do { try credentialStore.remove(); try await journal?.erase() } catch { report(error); return }
+        do { try await health?.eraseLocal(); health = nil; try credentialStore.remove(); try await journal?.erase() } catch { report(error); return }
         client = nil; journal = nil; sessions = []; messages = []; tasks = []; notifications = []; outgoing = []
         interactions = []; selectedSessionID = nil; dataEpoch = nil; draft = ""; attachments = []
         previewText = ""; turn = nil; phase = .disconnected; errorKey = nil
     }
     func setForeground(_ active: Bool) async {
         foreground = active
+        health?.setForeground(active)
         if active { await activate() } else { stopStreams() }
     }
     private func activate() async {
@@ -155,7 +161,7 @@ struct Interaction: Identifiable {
     }
     func select(_ id: String) async {
         if let previous = selectedSessionID { drafts[previous] = (draft, attachments) }
-        selectedSessionID = id; messages = []; previewText = ""; interactions = []; turn = nil
+        selectedSessionID = id; try? await journal?.selectSession(id); messages = []; previewText = ""; interactions = []; turn = nil
         draft = drafts[id]?.0 ?? ""; attachments = drafts[id]?.1 ?? []
         if let journal { do { messages = try await journal.read().transcripts[id] ?? [] } catch { report(error) } }
         guard let client else { return }

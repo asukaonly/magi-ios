@@ -25,11 +25,14 @@ struct ChatView: View {
                             .disabled(store.isLoadingHistory).frame(maxWidth: .infinity)
                     }
                     if store.messages.isEmpty && store.outgoing.allSatisfy({ $0.request.session_id != sessionID }) {
-                        ContentUnavailableView("chat.start", systemImage: "sparkle", description: Text("chat.start.help"))
+                        VStack(spacing: 18) {
+                            MagiMark(size: 48)
+                            Text("chat.start").font(.title3.weight(.medium))
+                        }.frame(maxWidth: .infinity).padding(.vertical, 72)
                     }
                     TimelineView(.periodic(from: .now, by: 1)) { timeline in
                         ForEach(Array(store.messages.enumerated()), id: \.offset) { _, message in
-                            if message.message_kind != "assistant_rhythm_segment" || message.timestamp <= Int64(timeline.date.timeIntervalSince1970 * 1000) {
+                            if message.kind != "status", !["assistant_thinking", "assistant_reasoning"].contains(message.message_kind ?? ""), message.message_kind != "assistant_rhythm_segment" || message.timestamp <= Int64(timeline.date.timeIntervalSince1970 * 1000) {
                                 MessageView(message: message, sessionID: sessionID)
                             }
                         }
@@ -37,16 +40,16 @@ struct ChatView: View {
                     ForEach(store.outgoing.filter { $0.request.session_id == sessionID }) { pending in PendingTurnView(pending: pending) }
                     if !store.previewText.isEmpty {
                         VStack(alignment: .leading, spacing: 8) {
-                            Text("Magi").font(.caption.bold()).foregroundStyle(Color.magi)
                             Text(store.previewText).textSelection(.enabled)
-                        }.padding(16).background(Color(uiColor: .secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 20))
+                        }.padding(.vertical, 10).padding(.horizontal, 4)
                             .accessibilityIdentifier("chat.preview")
                     }
                     ForEach(store.interactions) { interaction in InteractionView(interaction: interaction) }
                     if let turn = store.turn, !turn.response_complete, turn.acceptance != "absent" {
                         HStack(spacing: 10) {
-                            if !turn.terminal { ProgressView().controlSize(.small) }
-                            Text(L("turn.\(turn.state ?? "running")")).font(.caption).foregroundStyle(.secondary)
+                            if !turn.terminal { WorkingIndicator() }
+                            else if turn.state == "failed" { Text("chat.failed").font(.footnote).foregroundStyle(.secondary) }
+                            else if turn.state == "cancelled" { Text("chat.stopped").font(.footnote).foregroundStyle(.secondary) }
                             Spacer()
                             if !turn.terminal {
                                 Button("chat.stop") { Task { await store.stopTurn() } }.font(.caption)
@@ -57,7 +60,7 @@ struct ChatView: View {
                     Color.clear.frame(height: 1).id("bottom")
                 }.padding(16)
             }
-            .background(Color(uiColor: .systemGroupedBackground))
+            .background(Color.canvas)
             .scrollDismissesKeyboard(.interactively)
             .defaultScrollAnchor(.bottom)
             .safeAreaInset(edge: .bottom, spacing: 0) { composer }
@@ -66,10 +69,9 @@ struct ChatView: View {
             }
             .onChange(of: store.outgoing.count) { _, _ in withAnimation { proxy.scrollTo("bottom", anchor: .bottom) } }
         }
-        .navigationTitle(store.selectedTitle.isEmpty ? L("chat.untitled") : store.selectedTitle)
+        .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
-        .task(id: sessionID) { await store.select(sessionID) }
-        .toolbar { ToolbarItem(placement: .topBarTrailing) { Button { Task { await store.refresh() } } label: { Image(systemName: "arrow.clockwise") }.accessibilityLabel(Text("action.refresh")) } }
+        .task(id: sessionID) { if store.selectedSessionID != sessionID { await store.select(sessionID) } }
         .photosPicker(isPresented: $pickingPhotos, selection: $photos, maxSelectionCount: max(1, 8 - store.attachments.count), matching: .images)
         .task(id: photos) {
             guard !photos.isEmpty else { return }
@@ -146,7 +148,7 @@ struct ChatView: View {
                     .accessibilityIdentifier("chat.composer").disabled(store.isSending)
                 Button { focused = false; Task { await store.send() } } label: {
                     Group { if store.isSending { ProgressView().tint(.white) } else { Image(systemName: "arrow.up").font(.headline) } }
-                        .frame(width: 38, height: 38).background(store.canSend ? Color.magi : Color.gray, in: Circle()).foregroundStyle(.white)
+                        .frame(width: 38, height: 38).background(store.canSend ? Color.magi : Color.gray, in: Circle()).foregroundStyle(Color.canvas)
                 }.disabled(!store.canSend).padding(.bottom, 3)
                     .accessibilityLabel(Text("chat.send")).accessibilityIdentifier("chat.send")
             }
@@ -162,7 +164,6 @@ struct MessageView: View {
         HStack {
             if isUser { Spacer(minLength: 32) }
             VStack(alignment: .leading, spacing: 8) {
-                if !isUser { Text(message.kind == "status" ? L("chat.status") : "Magi").font(.caption.bold()).foregroundStyle(Color.magi) }
                 if !message.content.isEmpty { Text(message.content).textSelection(.enabled) }
                 ForEach(Array((message.attachments ?? []).enumerated()), id: \.offset) { _, attachment in
                     if attachment["kind"]?.string == "image", let id = attachment["attachment_id"]?.string {
@@ -171,11 +172,9 @@ struct MessageView: View {
                         Label(attachment["original_name"]?.string ?? L("attachment.file"), systemImage: "paperclip").font(.caption)
                     }
                 }
-                Text(Date(timeIntervalSince1970: Double(message.timestamp) / 1000), style: .time)
-                    .font(.caption2).foregroundStyle(.secondary)
             }
-            .padding(14)
-            .background(isUser ? Color.magi.opacity(0.12) : Color(uiColor: .secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 20))
+            .padding(isUser ? 14 : 4)
+            .background(isUser ? Color.magi.opacity(0.07) : Color.clear, in: RoundedRectangle(cornerRadius: 20))
             .accessibilityElement(children: .contain)
             if !isUser { Spacer(minLength: 20) }
         }
@@ -237,4 +236,18 @@ struct InteractionView: View {
             .disabled(store.phase != .online || store.isSending)
     }
     private func respond(_ value: String) { Task { await store.respond(interaction, answer: value) } }
+}
+
+struct WorkingIndicator: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    var body: some View {
+        TimelineView(.animation(minimumInterval: 0.05, paused: reduceMotion)) { context in
+            let phase = context.date.timeIntervalSinceReferenceDate.truncatingRemainder(dividingBy: 1.8) / 1.8
+            Capsule().fill(Color.magi.opacity(0.08)).frame(width: 112, height: 3)
+                .overlay(alignment: .leading) {
+                    Capsule().fill(Color.magi.opacity(0.5)).frame(width: 38, height: 3)
+                        .offset(x: reduceMotion ? 37 : 74 * (1 - cos(phase * .pi * 2)) / 2)
+                }
+        }.frame(height: 26).accessibilityLabel(Text("chat.working"))
+    }
 }

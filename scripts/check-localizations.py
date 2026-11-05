@@ -14,6 +14,6 @@ assert catalogs[0] == catalogs[1], 'Localization keys differ'
 referenced = set()
 for file in (root / 'MagiIOS').glob('*.swift'):
     content = re.sub(r'\.accessibilityIdentifier\("[^"]*"\)', '', file.read_text())
-    referenced.update(re.findall(r'"((?:welcome|connection|tab|conversations|chat|attachment|outgoing|interaction|permission|tasks|notifications|action|error|turn)\.[a-zA-Z.]+)"', content))
+    referenced.update(re.findall(r'"((?:welcome|connection|tab|conversations|chat|attachment|outgoing|interaction|permission|tasks|notifications|memory|extensions|health|action|error|turn)\.[a-zA-Z.]+)"', content))
 assert referenced <= catalogs[0], f'Missing keys: {referenced - catalogs[0]}'
 print(f'Validated {len(catalogs[0])} English and Chinese localization keys')

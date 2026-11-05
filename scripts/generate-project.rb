@@ -11,6 +11,7 @@ app = project.new_target(:application, 'MagiIOS', :ios, '17.0')
 app_group = project.main_group.new_group('MagiIOS', 'MagiIOS')
 Dir.glob('MagiIOS/*.swift').sort.each { |path| app.add_file_references([app_group.new_file(File.basename(path))]) }
 app_group.new_file('Info.plist')
+app_group.new_file('MagiIOS.entitlements')
 resources = app_group.new_group('Resources', 'Resources')
 ['Assets.xcassets', 'PrivacyInfo.xcprivacy'].each { |file| app.resources_build_phase.add_file_reference(resources.new_file(file)) }
 ['Localizable.strings', 'InfoPlist.strings'].each do |name|
@@ -47,6 +48,7 @@ Dir.glob('MagiIOSUITests/*.swift').sort.each { |path| ui.add_file_references([ui
     settings['ENABLE_USER_SCRIPT_SANDBOXING'] = 'YES'
     if target == app
       settings['INFOPLIST_FILE'] = 'MagiIOS/Info.plist'
+      settings['CODE_SIGN_ENTITLEMENTS'] = 'MagiIOS/MagiIOS.entitlements'
       settings['ASSETCATALOG_COMPILER_APPICON_NAME'] = 'AppIcon'
       settings['ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME'] = 'AccentColor'
     else

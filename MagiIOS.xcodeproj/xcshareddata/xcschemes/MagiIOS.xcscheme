@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "3D72718013BCD9A4E2E18632"
+               BlueprintIdentifier = "E7D391FEBD7E3218A9DAFABF"
                BuildableName = "MagiIOS.app"
                BlueprintName = "MagiIOS"
                ReferencedContainer = "container:MagiIOS.xcodeproj">
@@ -28,7 +28,7 @@
             buildForAnalyzing = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "6A687FDD688869ACD4F9DBCA"
+               BlueprintIdentifier = "898DE2A57AB759EEF6E86B92"
                BuildableName = "MagiIOSUITests.xctest"
                BlueprintName = "MagiIOSUITests"
                ReferencedContainer = "container:MagiIOS.xcodeproj">
@@ -44,7 +44,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "3D72718013BCD9A4E2E18632"
+            BlueprintIdentifier = "E7D391FEBD7E3218A9DAFABF"
             BuildableName = "MagiIOS.app"
             BlueprintName = "MagiIOS"
             ReferencedContainer = "container:MagiIOS.xcodeproj">
@@ -55,7 +55,7 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "6A687FDD688869ACD4F9DBCA"
+               BlueprintIdentifier = "898DE2A57AB759EEF6E86B92"
                BuildableName = "MagiIOSUITests.xctest"
                BlueprintName = "MagiIOSUITests"
                ReferencedContainer = "container:MagiIOS.xcodeproj">
@@ -77,7 +77,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "3D72718013BCD9A4E2E18632"
+            BlueprintIdentifier = "E7D391FEBD7E3218A9DAFABF"
             BuildableName = "MagiIOS.app"
             BlueprintName = "MagiIOS"
             ReferencedContainer = "container:MagiIOS.xcodeproj">
@@ -94,7 +94,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "3D72718013BCD9A4E2E18632"
+            BlueprintIdentifier = "E7D391FEBD7E3218A9DAFABF"
             BuildableName = "MagiIOS.app"
             BlueprintName = "MagiIOS"
             ReferencedContainer = "container:MagiIOS.xcodeproj">
