@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Loopback-only, deterministic UI fixture. Never used by the application runtime."""
 import json
+from pathlib import Path
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import threading
 import time
@@ -91,6 +92,9 @@ class Handler(BaseHTTPRequestHandler):
             if path == '/test/reset':
                 reset()
                 return self.respond({})
+            if path == '/test/images':
+                state['sessions']['fixture-session'][0]['attachments'] = [dict(attachment_id='fixture-image', kind='image', mime_type='image/png', original_name='Magi.png')]
+                return self.respond({'ok': True})
             if path == '/test/state':
                 return self.respond({k: v for k, v in state.items() if k != 'sessions'})
             if path in ['/test/offline', '/test/online']:
@@ -111,6 +115,14 @@ class Handler(BaseHTTPRequestHandler):
                 return self.respond({}, 401)
             if state['offline']:
                 return self.respond({'error': 'service unavailable'}, 503)
+            if path == '/api/messages/session/fixture-session/attachments/fixture-image/content':
+                raw = (Path(__file__).resolve().parents[1] / 'MagiIOS/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon.png').read_bytes()
+                self.send_response(200)
+                self.send_header('Content-Type', 'image/png')
+                self.send_header('Content-Length', str(len(raw)))
+                self.end_headers()
+                self.wfile.write(raw)
+                return
             if path == '/api/server/info':
                 return self.respond({'success': True, 'data': dict(server_id=SERVER, protocol_version=3, service_ready=True,
                     plugin_execution='server', supervisor={}, events=dict(epoch=EPOCH, sequence=state['sequence']),

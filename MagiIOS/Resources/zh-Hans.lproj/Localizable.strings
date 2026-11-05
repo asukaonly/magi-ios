@@ -96,3 +96,14 @@
 "turn.merged" = "本轮已合并";
 "turn.discarded" = "本轮已终止";
 "turn.superseded" = "已由新一轮处理接续";
+
+"attachment.photos" = "相册";
+"attachment.camera" = "拍照";
+"attachment.files" = "选择文件";
+"attachment.camera.denied" = "请在设置中允许相机访问，以便拍照。";
+"attachment.image" = "图片";
+"attachment.preview" = "查看图片";
+"attachment.retry" = "重新加载图片";
+"attachment.loading" = "正在加载图片";
+"action.settings" = "设置";
+"action.cancel" = "取消";

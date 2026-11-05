@@ -6,7 +6,7 @@ iPad running iOS 17 or later. Built with Swift 6; no third-party runtime depende
 ## First client slice
 
 - Pair to an existing Magi service; keep the device credential in iOS Keychain.
-- Browse and create conversations, send text and file attachments, and receive product events with HTTP/SSE.
+- Browse and create conversations, send text, camera/library images and file attachments, and receive product events with HTTP/SSE.
 - Recover delivery through durable local records and exact server confirmations.
 - Answer questions and approve or deny one-time tool requests.
 - View personal tasks, mark them complete, and read service notifications.
@@ -15,10 +15,12 @@ iPad running iOS 17 or later. Built with Swift 6; no third-party runtime depende
 
 The service owns execution, memory, business state, and plugins. This application
 does not load service plugins or start a local backend. Device collection, APNs,
-Share Extension, microphone/camera capture, and background delivery are not yet
+Share Extension, microphone capture, and background delivery are not yet
 implemented. Notifications are the service inbox, refreshed while the app is open.
-Attachments are uploaded from Files and displayed by name; downloads/previews are
-not part of this slice. Task creation/editing and the full desktop settings UI are
+Images use multipart uploads and attachment IDs, with authenticated inline/fullscreen
+previews. Camera/library images are resized to 2560 pixels and encoded as JPEG without
+location metadata; up to eight attachments can accompany text or be sent alone.
+Generic files are uploaded from Files and displayed by name. Task creation/editing and the full desktop settings UI are
 also outside this slice.
 
 ## Open and run

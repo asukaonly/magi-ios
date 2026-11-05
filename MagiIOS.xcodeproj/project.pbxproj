@@ -7,152 +7,155 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1C587A16CDF875F43D3F5A4B /* CredentialStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 046E1F2B654DE1FD90533382 /* CredentialStore.swift */; };
-		2961757903F6C8CC21DAD58A /* AppStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1675D150B78E67F9DD36364 /* AppStore.swift */; };
-		446B7195DA68C696C4288DC2 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB655BE5F78ED124112D45F3 /* RootView.swift */; };
-		5EB9E893D1CB7154017026E4 /* MagiIOSUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDBE4C06B888F3314BF8E59 /* MagiIOSUITests.swift */; };
-		680EC67F4DAB63551124AF8F /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 3F09F95E808AF2C2E62E79F6 /* PrivacyInfo.xcprivacy */; };
-		6D779026A08598108EA05880 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87C149CB03BFF327BF2EA037 /* Foundation.framework */; };
-		73A56EB5700751AE4B2EE34C /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F638621451B088DF0A89489 /* ChatView.swift */; };
-		9E45C845AE328BE541DDCBE2 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 96DB0AA39ED930FDF6603FE4 /* InfoPlist.strings */; };
-		A3ECC00D3BFAF84338BFBB67 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 02D8F1552BF4BEEFF44969D1 /* Assets.xcassets */; };
-		AB929BE647250B22325831AD /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = A4E3CBFF94DA8AFC123B340D /* Localizable.strings */; };
-		B536499F57AEFFE791FAFC4B /* MagiIOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67375D3085C08977554497A5 /* MagiIOSApp.swift */; };
-		C0C7D16FF143BDD990741E28 /* MagiCore in Frameworks */ = {isa = PBXBuildFile; productRef = ED346577AECD14AA76F14568 /* MagiCore */; };
-		C0D0411B51DD080D870AA161 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87C149CB03BFF327BF2EA037 /* Foundation.framework */; };
+		28DBED1E7E3E7A189B062A4A /* MagiCore in Frameworks */ = {isa = PBXBuildFile; productRef = B061CB1F10A624FA3867BEF5 /* MagiCore */; };
+		667BA3FC9615CA6E2197E6E7 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A9B55CD41A86CF3DFFF2664 /* RootView.swift */; };
+		7CEA7E22500183F920608909 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = B9F99A878B2D590C6D837F44 /* InfoPlist.strings */; };
+		80BA95F05939A5213C54E903 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BDD61556CFD4418F447B849B /* Assets.xcassets */; };
+		8759E993D33C75928C1E3F0D /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 308EDC5DA61DBEB9EDCF56BD /* PrivacyInfo.xcprivacy */; };
+		8880D9D1BD493FA5F8D8A475 /* CredentialStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FA57911FB19D03A9E2E8844 /* CredentialStore.swift */; };
+		88A655DEAEDF3DDBCD86DE2A /* ChatImages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 409C36E0CAEA39F0FB92E62E /* ChatImages.swift */; };
+		9389FF5B6FC13FE12534583A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3935FF33D447F96994DCCB33 /* Foundation.framework */; };
+		9A9361430B34E958146FD12F /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 967188B2FF65421870FEB7CE /* ChatView.swift */; };
+		A599AEBF3279D4EA0762B41C /* MagiIOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9F2BA80854CAEE7746AADA2 /* MagiIOSApp.swift */; };
+		BEC8295F11069C329F2605C7 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3935FF33D447F96994DCCB33 /* Foundation.framework */; };
+		C3609D7634BD1B347DDD1EDA /* MagiIOSUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8CC5DB72517062591E44AD1 /* MagiIOSUITests.swift */; };
+		D8B1FA33A634487B893BA63C /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2DD79C445682CC58C25E95FE /* Localizable.strings */; };
+		D9530B4F48DF598F94AB5000 /* AppStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A116AC9A9D75C23484527D95 /* AppStore.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		82EE049822551990F5DFDB08 /* PBXContainerItemProxy */ = {
+		E11E76BD817B765E58C8283C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B2DFEA0998A303756B0E529B /* Project object */;
+			containerPortal = 2C98CC1B2E6BC6F12F66F5AD /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = A5336433966F8A1249A97DBA;
+			remoteGlobalIDString = 3D72718013BCD9A4E2E18632;
 			remoteInfo = MagiIOS;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		02D8F1552BF4BEEFF44969D1 /* Assets.xcassets */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		046E1F2B654DE1FD90533382 /* CredentialStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CredentialStore.swift; sourceTree = "<group>"; };
-		0F638621451B088DF0A89489 /* ChatView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
-		2C9778CBA43FB7D09AF16BB0 /* zh-Hans */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
-		2DDBE4C06B888F3314BF8E59 /* MagiIOSUITests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MagiIOSUITests.swift; sourceTree = "<group>"; };
-		3A7A39FA0116B4CC103E7208 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		3E3661B47B59B7824658CA99 /* en */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		3F09F95E808AF2C2E62E79F6 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		588B274F60774400F3D4C5DF /* zh-Hans */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
-		67375D3085C08977554497A5 /* MagiIOSApp.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MagiIOSApp.swift; sourceTree = "<group>"; };
-		71434194E58812984A2AC3E3 /* en */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
-		87C149CB03BFF327BF2EA037 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
-		A5C6DF7B5EB362E6DF4FC464 /* MagiIOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MagiIOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		D95D1C7F29E265E19E52F1A0 /* MagiIOSUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MagiIOSUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		DB655BE5F78ED124112D45F3 /* RootView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
-		F1675D150B78E67F9DD36364 /* AppStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppStore.swift; sourceTree = "<group>"; };
+		13429EF09429E51DFC62035D /* en */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		1717145115C7B9BD24BD10DF /* en */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		2954604CD9BCAD16CB4D7D96 /* zh-Hans */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		308EDC5DA61DBEB9EDCF56BD /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		3935FF33D447F96994DCCB33 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		409C36E0CAEA39F0FB92E62E /* ChatImages.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ChatImages.swift; sourceTree = "<group>"; };
+		47C77419FC49358F587379D9 /* zh-Hans */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		53D5588E26E5BC0D00AFCF53 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		8A8FE4C6C9A6523A35BEA56E /* MagiIOSUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MagiIOSUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		8A9B55CD41A86CF3DFFF2664 /* RootView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		8FA57911FB19D03A9E2E8844 /* CredentialStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CredentialStore.swift; sourceTree = "<group>"; };
+		967188B2FF65421870FEB7CE /* ChatView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
+		A116AC9A9D75C23484527D95 /* AppStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppStore.swift; sourceTree = "<group>"; };
+		AA46EF5714157C342F05C558 /* MagiIOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MagiIOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		BDD61556CFD4418F447B849B /* Assets.xcassets */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		C9F2BA80854CAEE7746AADA2 /* MagiIOSApp.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MagiIOSApp.swift; sourceTree = "<group>"; };
+		F8CC5DB72517062591E44AD1 /* MagiIOSUITests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MagiIOSUITests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		6783ED20B7DEBB56AEBB8486 /* Frameworks */ = {
+		86E69F86FDC27DC0C33D8683 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6D779026A08598108EA05880 /* Foundation.framework in Frameworks */,
+				BEC8295F11069C329F2605C7 /* Foundation.framework in Frameworks */,
+				28DBED1E7E3E7A189B062A4A /* MagiCore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		BD76DEE53399D4C9E8879EE7 /* Frameworks */ = {
+		A71EF730069E37BA9D160718 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C0D0411B51DD080D870AA161 /* Foundation.framework in Frameworks */,
-				C0C7D16FF143BDD990741E28 /* MagiCore in Frameworks */,
+				9389FF5B6FC13FE12534583A /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		0F5BEA0A92F1BDD051B89877 /* MagiIOS */ = {
+		0DDF85A60C338796C1756C11 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				F1675D150B78E67F9DD36364 /* AppStore.swift */,
-				0F638621451B088DF0A89489 /* ChatView.swift */,
-				046E1F2B654DE1FD90533382 /* CredentialStore.swift */,
-				67375D3085C08977554497A5 /* MagiIOSApp.swift */,
-				DB655BE5F78ED124112D45F3 /* RootView.swift */,
-				3A7A39FA0116B4CC103E7208 /* Info.plist */,
-				8973D32BFD1347642532C811 /* Resources */,
+				AA46EF5714157C342F05C558 /* MagiIOS.app */,
+				8A8FE4C6C9A6523A35BEA56E /* MagiIOSUITests.xctest */,
 			);
-			name = MagiIOS;
-			path = MagiIOS;
+			name = Products;
 			sourceTree = "<group>";
 		};
-		36FEF5AFABC63BD02F8FC295 /* MagiIOSUITests */ = {
+		1EF327ECC64E13A4F352444D /* MagiIOSUITests */ = {
 			isa = PBXGroup;
 			children = (
-				2DDBE4C06B888F3314BF8E59 /* MagiIOSUITests.swift */,
+				F8CC5DB72517062591E44AD1 /* MagiIOSUITests.swift */,
 			);
 			name = MagiIOSUITests;
 			path = MagiIOSUITests;
 			sourceTree = "<group>";
 		};
-		5AFD7C7B519B6C59B5007C8A = {
+		204C98BABFF56899EC5DE2BA /* iOS */ = {
 			isa = PBXGroup;
 			children = (
-				690E2E889CF05DF96514D3B6 /* Products */,
-				A0898244FE4423EA7758C540 /* Frameworks */,
-				0F5BEA0A92F1BDD051B89877 /* MagiIOS */,
-				36FEF5AFABC63BD02F8FC295 /* MagiIOSUITests */,
+				3935FF33D447F96994DCCB33 /* Foundation.framework */,
 			);
+			name = iOS;
 			sourceTree = "<group>";
 		};
-		690E2E889CF05DF96514D3B6 /* Products */ = {
+		8DDD54296861FDE98CE5804D /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				A5C6DF7B5EB362E6DF4FC464 /* MagiIOS.app */,
-				D95D1C7F29E265E19E52F1A0 /* MagiIOSUITests.xctest */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		8973D32BFD1347642532C811 /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				02D8F1552BF4BEEFF44969D1 /* Assets.xcassets */,
-				3F09F95E808AF2C2E62E79F6 /* PrivacyInfo.xcprivacy */,
-				A4E3CBFF94DA8AFC123B340D /* Localizable.strings */,
-				96DB0AA39ED930FDF6603FE4 /* InfoPlist.strings */,
+				BDD61556CFD4418F447B849B /* Assets.xcassets */,
+				308EDC5DA61DBEB9EDCF56BD /* PrivacyInfo.xcprivacy */,
+				2DD79C445682CC58C25E95FE /* Localizable.strings */,
+				B9F99A878B2D590C6D837F44 /* InfoPlist.strings */,
 			);
 			name = Resources;
 			path = Resources;
 			sourceTree = "<group>";
 		};
-		A0898244FE4423EA7758C540 /* Frameworks */ = {
+		8FC9F369E9B2155FE85F835B /* MagiIOS */ = {
 			isa = PBXGroup;
 			children = (
-				F2AD8C4108DE458B3F9A8381 /* iOS */,
+				A116AC9A9D75C23484527D95 /* AppStore.swift */,
+				409C36E0CAEA39F0FB92E62E /* ChatImages.swift */,
+				967188B2FF65421870FEB7CE /* ChatView.swift */,
+				8FA57911FB19D03A9E2E8844 /* CredentialStore.swift */,
+				C9F2BA80854CAEE7746AADA2 /* MagiIOSApp.swift */,
+				8A9B55CD41A86CF3DFFF2664 /* RootView.swift */,
+				53D5588E26E5BC0D00AFCF53 /* Info.plist */,
+				8DDD54296861FDE98CE5804D /* Resources */,
 			);
-			name = Frameworks;
+			name = MagiIOS;
+			path = MagiIOS;
 			sourceTree = "<group>";
 		};
-		F2AD8C4108DE458B3F9A8381 /* iOS */ = {
+		DAA781899F49A57CBD44AE0E = {
 			isa = PBXGroup;
 			children = (
-				87C149CB03BFF327BF2EA037 /* Foundation.framework */,
+				0DDF85A60C338796C1756C11 /* Products */,
+				EC8732562AFD05101C28B53F /* Frameworks */,
+				8FC9F369E9B2155FE85F835B /* MagiIOS */,
+				1EF327ECC64E13A4F352444D /* MagiIOSUITests */,
 			);
-			name = iOS;
+			sourceTree = "<group>";
+		};
+		EC8732562AFD05101C28B53F /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				204C98BABFF56899EC5DE2BA /* iOS */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		A5336433966F8A1249A97DBA /* MagiIOS */ = {
+		3D72718013BCD9A4E2E18632 /* MagiIOS */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = D39E42EC1E61CB3E9AB70C1C /* Build configuration list for PBXNativeTarget "MagiIOS" */;
+			buildConfigurationList = 0831CDBCA3CCC599F8CDDFF9 /* Build configuration list for PBXNativeTarget "MagiIOS" */;
 			buildPhases = (
-				9FAD9CA23E724E94E9794414 /* Sources */,
-				BD76DEE53399D4C9E8879EE7 /* Frameworks */,
-				45B7C9113447D7FED843D6E5 /* Resources */,
+				A7C439CE039F3D1DB7AEB3E8 /* Sources */,
+				86E69F86FDC27DC0C33D8683 /* Frameworks */,
+				43C24D3CC3A1F02B5370642A /* Resources */,
 			);
 			buildRules = (
 			);
@@ -160,40 +163,40 @@
 			);
 			name = MagiIOS;
 			packageProductDependencies = (
-				ED346577AECD14AA76F14568 /* MagiCore */,
+				B061CB1F10A624FA3867BEF5 /* MagiCore */,
 			);
 			productName = MagiIOS;
-			productReference = A5C6DF7B5EB362E6DF4FC464 /* MagiIOS.app */;
+			productReference = AA46EF5714157C342F05C558 /* MagiIOS.app */;
 			productType = "com.apple.product-type.application";
 		};
-		F9E8047A505BB8C7F6D7FCAB /* MagiIOSUITests */ = {
+		6A687FDD688869ACD4F9DBCA /* MagiIOSUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 863537E6F70E101F09084121 /* Build configuration list for PBXNativeTarget "MagiIOSUITests" */;
+			buildConfigurationList = F3EE2EF623E85CD0DF949F48 /* Build configuration list for PBXNativeTarget "MagiIOSUITests" */;
 			buildPhases = (
-				687CCF884AFC25C016D39EF0 /* Sources */,
-				6783ED20B7DEBB56AEBB8486 /* Frameworks */,
-				BBEB91B9434A37883045D353 /* Resources */,
+				69FF6B6BD1A001F203EB5134 /* Sources */,
+				A71EF730069E37BA9D160718 /* Frameworks */,
+				12E82D92C366E48FF69F99C8 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				CA5CC4C50B2D6A31A196F13D /* PBXTargetDependency */,
+				172BB473C45CB55D419B29F7 /* PBXTargetDependency */,
 			);
 			name = MagiIOSUITests;
 			productName = MagiIOSUITests;
-			productReference = D95D1C7F29E265E19E52F1A0 /* MagiIOSUITests.xctest */;
+			productReference = 8A8FE4C6C9A6523A35BEA56E /* MagiIOSUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		B2DFEA0998A303756B0E529B /* Project object */ = {
+		2C98CC1B2E6BC6F12F66F5AD /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1600;
 				LastUpgradeCheck = 2600;
 			};
-			buildConfigurationList = D76A6681BFB1DA23335F8209 /* Build configuration list for PBXProject "MagiIOS" */;
+			buildConfigurationList = 355F76213B728363C50AF1ED /* Build configuration list for PBXProject "MagiIOS" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -202,98 +205,99 @@
 				"zh-Hans",
 				Base,
 			);
-			mainGroup = 5AFD7C7B519B6C59B5007C8A;
+			mainGroup = DAA781899F49A57CBD44AE0E;
 			minimizedProjectReferenceProxies = 0;
 			packageReferences = (
-				9FB87980CD7C05E1AE5446C7 /* XCLocalSwiftPackageReference "MagiCore" */,
+				AE8EF8A54A004852DE105B04 /* XCLocalSwiftPackageReference "MagiCore" */,
 			);
 			preferredProjectObjectVersion = 77;
-			productRefGroup = 690E2E889CF05DF96514D3B6 /* Products */;
+			productRefGroup = 0DDF85A60C338796C1756C11 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				A5336433966F8A1249A97DBA /* MagiIOS */,
-				F9E8047A505BB8C7F6D7FCAB /* MagiIOSUITests */,
+				3D72718013BCD9A4E2E18632 /* MagiIOS */,
+				6A687FDD688869ACD4F9DBCA /* MagiIOSUITests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		45B7C9113447D7FED843D6E5 /* Resources */ = {
+		12E82D92C366E48FF69F99C8 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A3ECC00D3BFAF84338BFBB67 /* Assets.xcassets in Resources */,
-				680EC67F4DAB63551124AF8F /* PrivacyInfo.xcprivacy in Resources */,
-				AB929BE647250B22325831AD /* Localizable.strings in Resources */,
-				9E45C845AE328BE541DDCBE2 /* InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		BBEB91B9434A37883045D353 /* Resources */ = {
+		43C24D3CC3A1F02B5370642A /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				80BA95F05939A5213C54E903 /* Assets.xcassets in Resources */,
+				8759E993D33C75928C1E3F0D /* PrivacyInfo.xcprivacy in Resources */,
+				D8B1FA33A634487B893BA63C /* Localizable.strings in Resources */,
+				7CEA7E22500183F920608909 /* InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		687CCF884AFC25C016D39EF0 /* Sources */ = {
+		69FF6B6BD1A001F203EB5134 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5EB9E893D1CB7154017026E4 /* MagiIOSUITests.swift in Sources */,
+				C3609D7634BD1B347DDD1EDA /* MagiIOSUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		9FAD9CA23E724E94E9794414 /* Sources */ = {
+		A7C439CE039F3D1DB7AEB3E8 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2961757903F6C8CC21DAD58A /* AppStore.swift in Sources */,
-				73A56EB5700751AE4B2EE34C /* ChatView.swift in Sources */,
-				1C587A16CDF875F43D3F5A4B /* CredentialStore.swift in Sources */,
-				B536499F57AEFFE791FAFC4B /* MagiIOSApp.swift in Sources */,
-				446B7195DA68C696C4288DC2 /* RootView.swift in Sources */,
+				D9530B4F48DF598F94AB5000 /* AppStore.swift in Sources */,
+				88A655DEAEDF3DDBCD86DE2A /* ChatImages.swift in Sources */,
+				9A9361430B34E958146FD12F /* ChatView.swift in Sources */,
+				8880D9D1BD493FA5F8D8A475 /* CredentialStore.swift in Sources */,
+				A599AEBF3279D4EA0762B41C /* MagiIOSApp.swift in Sources */,
+				667BA3FC9615CA6E2197E6E7 /* RootView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		CA5CC4C50B2D6A31A196F13D /* PBXTargetDependency */ = {
+		172BB473C45CB55D419B29F7 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = MagiIOS;
-			target = A5336433966F8A1249A97DBA /* MagiIOS */;
-			targetProxy = 82EE049822551990F5DFDB08 /* PBXContainerItemProxy */;
+			target = 3D72718013BCD9A4E2E18632 /* MagiIOS */;
+			targetProxy = E11E76BD817B765E58C8283C /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		96DB0AA39ED930FDF6603FE4 /* InfoPlist.strings */ = {
+		2DD79C445682CC58C25E95FE /* Localizable.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
-				3E3661B47B59B7824658CA99 /* en */,
-				588B274F60774400F3D4C5DF /* zh-Hans */,
-			);
-			name = InfoPlist.strings;
-			sourceTree = "<group>";
-		};
-		A4E3CBFF94DA8AFC123B340D /* Localizable.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				71434194E58812984A2AC3E3 /* en */,
-				2C9778CBA43FB7D09AF16BB0 /* zh-Hans */,
+				1717145115C7B9BD24BD10DF /* en */,
+				2954604CD9BCAD16CB4D7D96 /* zh-Hans */,
 			);
 			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+		B9F99A878B2D590C6D837F44 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				13429EF09429E51DFC62035D /* en */,
+				47C77419FC49358F587379D9 /* zh-Hans */,
+			);
+			name = InfoPlist.strings;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
-		000A231EBF66A70BA2A18E37 /* Release */ = {
+		67ABA2803220B50CD272FA8A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
@@ -312,102 +316,7 @@
 			};
 			name = Release;
 		};
-		2169BD82748BC68EA0CA0BC5 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
-				INFOPLIST_FILE = MagiIOS/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 0.1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.asuka.magi.ios;
-				SDKROOT = iphoneos;
-				SWIFT_VERSION = 6.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		7B72DC30090FD1D2DAC79996 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
-				INFOPLIST_FILE = MagiIOS/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 0.1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.asuka.magi.ios;
-				SDKROOT = iphoneos;
-				SWIFT_VERSION = 6.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		7B7651A46990EE42813E03DE /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				ENABLE_NS_ASSERTIONS = NO;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				MTL_ENABLE_DEBUG_INFO = NO;
-				MTL_FAST_MATH = YES;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				SWIFT_VERSION = 5.0;
-			};
-			name = Release;
-		};
-		821E7A4B4ED40FD30F1EC0D2 /* Debug */ = {
+		77F228CBEEB3145E1121A179 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -468,7 +377,81 @@
 			};
 			name = Debug;
 		};
-		C79038B19DCB6FD8FDE671A8 /* Debug */ = {
+		86F44C69B4C7811A1252ADBC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		8F811EA9403F6484106204CC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				INFOPLIST_FILE = MagiIOS/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.asuka.magi.ios;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		93A32453FC8C6D1694892711 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
@@ -486,32 +469,53 @@
 			};
 			name = Debug;
 		};
+		9911BC8313C90F5C16D6AD58 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				INFOPLIST_FILE = MagiIOS/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.asuka.magi.ios;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		863537E6F70E101F09084121 /* Build configuration list for PBXNativeTarget "MagiIOSUITests" */ = {
+		0831CDBCA3CCC599F8CDDFF9 /* Build configuration list for PBXNativeTarget "MagiIOS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				000A231EBF66A70BA2A18E37 /* Release */,
-				C79038B19DCB6FD8FDE671A8 /* Debug */,
+				9911BC8313C90F5C16D6AD58 /* Release */,
+				8F811EA9403F6484106204CC /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		D39E42EC1E61CB3E9AB70C1C /* Build configuration list for PBXNativeTarget "MagiIOS" */ = {
+		355F76213B728363C50AF1ED /* Build configuration list for PBXProject "MagiIOS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				2169BD82748BC68EA0CA0BC5 /* Release */,
-				7B72DC30090FD1D2DAC79996 /* Debug */,
+				77F228CBEEB3145E1121A179 /* Debug */,
+				86F44C69B4C7811A1252ADBC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		D76A6681BFB1DA23335F8209 /* Build configuration list for PBXProject "MagiIOS" */ = {
+		F3EE2EF623E85CD0DF949F48 /* Build configuration list for PBXNativeTarget "MagiIOSUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				821E7A4B4ED40FD30F1EC0D2 /* Debug */,
-				7B7651A46990EE42813E03DE /* Release */,
+				67ABA2803220B50CD272FA8A /* Release */,
+				93A32453FC8C6D1694892711 /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -519,19 +523,19 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		9FB87980CD7C05E1AE5446C7 /* XCLocalSwiftPackageReference "MagiCore" */ = {
+		AE8EF8A54A004852DE105B04 /* XCLocalSwiftPackageReference "MagiCore" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = Packages/MagiCore;
 		};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		ED346577AECD14AA76F14568 /* MagiCore */ = {
+		B061CB1F10A624FA3867BEF5 /* MagiCore */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 9FB87980CD7C05E1AE5446C7 /* XCLocalSwiftPackageReference "MagiCore" */;
+			package = AE8EF8A54A004852DE105B04 /* XCLocalSwiftPackageReference "MagiCore" */;
 			productName = MagiCore;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
-	rootObject = B2DFEA0998A303756B0E529B /* Project object */;
+	rootObject = 2C98CC1B2E6BC6F12F66F5AD /* Project object */;
 }

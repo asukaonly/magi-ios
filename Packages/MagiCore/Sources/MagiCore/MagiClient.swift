@@ -158,6 +158,25 @@ public actor MagiClient {
         else { throw ClientError.invalidResponse }
         return value["data"]["attachment"]
     }
+    public func image(sessionID: String, attachmentID: String) async throws -> Data {
+        guard !sessionID.isEmpty, !attachmentID.isEmpty else { throw ClientError.invalidContract }
+        for attempt in 0...1 {
+            var request = URLRequest(url: try credential.address.url(path:
+                "/messages/session/\(ServerAddress.segment(sessionID))/attachments/\(ServerAddress.segment(attachmentID))/content"))
+            request.setValue(try await token(), forHTTPHeaderField: "x-magi-session-token")
+            request.setValue("image/*", forHTTPHeaderField: "Accept")
+            let response = try await transport.send(request)
+            if response.status == 401 { access = nil; if attempt == 0 { continue } }
+            try Self.checkStatus(response.status)
+            guard response.status == 200, response.contentType.lowercased().hasPrefix("image/"), !response.data.isEmpty else {
+                throw ClientError.invalidResponse
+            }
+            guard response.data.count <= 20 * 1024 * 1024 else { throw ClientError.responseTooLarge }
+            return response.data
+        }
+        throw ClientError.unauthorized
+    }
+
     private static func checkStatus(_ status: Int) throws {
         if status == 401 || status == 403 { throw ClientError.unauthorized }
         if status == 409 { throw ClientError.conflict }

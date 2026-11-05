@@ -137,3 +137,36 @@ actor MockTransport: HTTPTransport {
     await #expect(throws: (any Error).self) { try await reopened.read() }
     #expect(try String(contentsOf: file, encoding: .utf8) == "corrupt")
 }
+
+@Test func imageReadsAreAuthenticatedAndRejectNonImages() async throws {
+    let bytes = Data([0xff, 0xd8, 0xff])
+    let transport = MockTransport([.response(HTTPResponse(status: 401, data: Data())),
+        .response(HTTPResponse(status: 200, data: bytes, contentType: "image/jpeg"))])
+    let client = MagiClient(credential: try credential(), transport: transport)
+    #expect(try await client.image(sessionID: "s", attachmentID: "a") == bytes)
+    let reads = await transport.calls.filter { $0.url?.path.hasSuffix("/content") == true }
+    #expect(reads.count == 2)
+    #expect(reads.allSatisfy { $0.url?.query == nil && $0.value(forHTTPHeaderField: "x-magi-session-token") == "access" })
+    let invalid = MockTransport([.response(HTTPResponse(status: 200, data: Data("not an image".utf8), contentType: "text/html"))])
+    await #expect(throws: ClientError.invalidResponse) {
+        try await MagiClient(credential: credential(), transport: invalid).image(sessionID: "s", attachmentID: "a")
+    }
+}
+
+@Test func imageOnlySendRetainsAttachmentReferences() async throws {
+    let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+    defer { try? FileManager.default.removeItem(at: root) }
+    let journal = LocalState(root: root, credential: try credential())
+    let attachment: [String: JSONValue] = ["attachment_id": .string("photo-id"), "kind": .string("image"), "mime_type": .string("image/jpeg")]
+    let pending = OutgoingTurn(request: Wire.UserMessageRequest(attachments: [attachment], client_turn_id: "image-turn", message: "", session_id: "s"), dataEpoch: dataEpoch)
+    let receipt = HTTPResponse(status: 200, data: try jsonData(["identity": "image-turn", "session_id": "s", "status": "confirmed", "safe_to_retry": false]))
+    let transport = MockTransport([.response(try infoResponse()), .disconnected, .response(receipt)])
+    let client = MagiClient(credential: try credential(), transport: transport)
+    #expect(try await TurnDelivery.deliver(pending, client: client, journal: journal) == .confirmed)
+    #expect(try await journal.read().outgoing.first?.request.attachments == [attachment])
+    let sends = await transport.calls.filter { $0.url?.path == "/api/messages/send" }
+    #expect(sends.count == 1)
+    let body = try JSONDecoder().decode(JSONValue.self, from: #require(sends.first?.httpBody))
+    #expect(body["message"].string == "")
+    #expect(body["attachments"].array?.first?["attachment_id"].string == "photo-id")
+}

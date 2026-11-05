@@ -1,11 +1,18 @@
 import SwiftUI
 import UniformTypeIdentifiers
+import PhotosUI
+import AVFoundation
 import MagiCore
 
 struct ChatView: View {
     let sessionID: String
     @Environment(AppStore.self) private var store
     @State private var importing = false
+    @State private var pickingPhotos = false
+    @State private var photos: [PhotosPickerItem] = []
+    @State private var takingPhoto = false
+    @State private var cameraDenied = false
+    @Environment(\.openURL) private var openURL
     @FocusState private var focused: Bool
     var body: some View {
         @Bindable var store = store
@@ -23,7 +30,7 @@ struct ChatView: View {
                     TimelineView(.periodic(from: .now, by: 1)) { timeline in
                         ForEach(Array(store.messages.enumerated()), id: \.offset) { _, message in
                             if message.message_kind != "assistant_rhythm_segment" || message.timestamp <= Int64(timeline.date.timeIntervalSince1970 * 1000) {
-                                MessageView(message: message)
+                                MessageView(message: message, sessionID: sessionID)
                             }
                         }
                     }
@@ -63,6 +70,36 @@ struct ChatView: View {
         .navigationBarTitleDisplayMode(.inline)
         .task(id: sessionID) { await store.select(sessionID) }
         .toolbar { ToolbarItem(placement: .topBarTrailing) { Button { Task { await store.refresh() } } label: { Image(systemName: "arrow.clockwise") }.accessibilityLabel(Text("action.refresh")) } }
+        .photosPicker(isPresented: $pickingPhotos, selection: $photos, maxSelectionCount: max(1, 8 - store.attachments.count), matching: .images)
+        .task(id: photos) {
+            guard !photos.isEmpty else { return }
+            let selected = photos, owner = store.selectedSessionID
+            store.isPreparingImages = true
+            defer { store.isPreparingImages = false }
+            do {
+                var data: [Data] = []
+                for photo in selected {
+                    guard let bytes = try await photo.loadTransferable(type: Data.self) else { throw ClientError.invalidResponse }
+                    try Task.checkCancellation()
+                    data.append(bytes)
+                }
+                await store.addImages(data, sessionID: owner)
+            } catch { store.report(error) }
+            photos = []
+        }
+        .fullScreenCover(isPresented: $takingPhoto) {
+            CameraCapture { bytes in
+                Task {
+                    store.isPreparingImages = true
+                    defer { store.isPreparingImages = false }
+                    await store.addImages([bytes], sessionID: sessionID)
+                }
+            }.ignoresSafeArea()
+        }
+        .alert("attachment.camera.denied", isPresented: $cameraDenied) {
+            Button("action.settings") { if let url = URL(string: UIApplication.openSettingsURLString) { openURL(url) } }
+            Button("action.cancel", role: .cancel) {}
+        }
         .fileImporter(isPresented: $importing, allowedContentTypes: [.item], allowsMultipleSelection: true) { result in
             switch result {
             case .success(let urls): Task { await store.addFiles(urls) }
@@ -77,19 +114,33 @@ struct ChatView: View {
                 ScrollView(.horizontal) {
                     HStack {
                         ForEach(store.attachments) { file in
+                            if file.mimeType.hasPrefix("image/") {
+                                DraftImage(file: file) { store.attachments.removeAll { $0.id == file.id } }
+                            } else {
                             HStack(spacing: 8) {
                                 Image(systemName: "doc")
                                 Text(file.filename).lineLimit(1)
                                 Button { store.attachments.removeAll { $0.id == file.id } } label: { Image(systemName: "xmark.circle.fill") }
                                     .accessibilityLabel(Text("attachment.remove"))
                             }.font(.caption).padding(8).background(.quaternary, in: Capsule())
+                            }
                         }
                     }
                 }.scrollIndicators(.hidden)
             }
+            if store.isPreparingImages { ProgressView().accessibilityLabel(Text("attachment.loading")) }
             HStack(alignment: .bottom, spacing: 10) {
-                Button { importing = true } label: { Image(systemName: "plus").font(.title3).frame(width: 32, height: 44) }
-                    .accessibilityLabel(Text("attachment.add")).disabled(store.isSending || store.phase != .online)
+                Menu {
+                    Button("attachment.photos", systemImage: "photo.on.rectangle") { pickingPhotos = true }
+                    Button("attachment.camera", systemImage: "camera") {
+                        Task {
+                            if await AVCaptureDevice.requestAccess(for: .video) { takingPhoto = true }
+                            else { cameraDenied = true }
+                        }
+                    }.disabled(!UIImagePickerController.isSourceTypeAvailable(.camera))
+                    Button("attachment.files", systemImage: "folder") { importing = true }
+                } label: { Image(systemName: "plus").font(.title3).frame(width: 32, height: 44) }
+                    .accessibilityLabel(Text("attachment.add")).accessibilityIdentifier("chat.attach").disabled(store.isSending || store.isPreparingImages || store.attachments.count >= 8 || store.phase != .online)
                 TextField("chat.placeholder", text: $store.draft, axis: .vertical)
                     .lineLimit(1...6).padding(.vertical, 11).focused($focused)
                     .accessibilityIdentifier("chat.composer").disabled(store.isSending)
@@ -105,6 +156,7 @@ struct ChatView: View {
 
 struct MessageView: View {
     let message: Wire.ChatDisplayMessage
+    let sessionID: String
     private var isUser: Bool { message.role == "user" }
     var body: some View {
         HStack {
@@ -113,14 +165,18 @@ struct MessageView: View {
                 if !isUser { Text(message.kind == "status" ? L("chat.status") : "Magi").font(.caption.bold()).foregroundStyle(Color.magi) }
                 if !message.content.isEmpty { Text(message.content).textSelection(.enabled) }
                 ForEach(Array((message.attachments ?? []).enumerated()), id: \.offset) { _, attachment in
-                    Label(attachment["filename"]?.string ?? attachment["name"]?.string ?? L("attachment.file"), systemImage: "paperclip").font(.caption)
+                    if attachment["kind"]?.string == "image", let id = attachment["attachment_id"]?.string {
+                        ChatImage(sessionID: sessionID, attachmentID: id)
+                    } else {
+                        Label(attachment["original_name"]?.string ?? L("attachment.file"), systemImage: "paperclip").font(.caption)
+                    }
                 }
                 Text(Date(timeIntervalSince1970: Double(message.timestamp) / 1000), style: .time)
                     .font(.caption2).foregroundStyle(.secondary)
             }
             .padding(14)
             .background(isUser ? Color.magi.opacity(0.12) : Color(uiColor: .secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 20))
-            .accessibilityElement(children: .combine)
+            .accessibilityElement(children: .contain)
             if !isUser { Spacer(minLength: 20) }
         }
     }

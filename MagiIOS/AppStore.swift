@@ -41,6 +41,7 @@ struct Interaction: Identifiable {
     var attachments: [DraftAttachment] = []
     var errorKey: String?
     var isSending = false
+    var isPreparingImages = false
     var isCreating = false
     var isRefreshing = false
     var isLoadingHistory = false
@@ -50,7 +51,7 @@ struct Interaction: Identifiable {
     var localEpochChanged = false
     var hasConnection: Bool { client != nil }
     var selectedTitle: String { sessions.first { $0.session_id == selectedSessionID }?.title ?? "" }
-    var canSend: Bool { phase == .online && !isSending && selectedSessionID != nil && interactions.isEmpty && (!draft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || !attachments.isEmpty) }
+    var canSend: Bool { phase == .online && !isSending && !isPreparingImages && selectedSessionID != nil && interactions.isEmpty && (!draft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || !attachments.isEmpty) }
     private var client: MagiClient?
     private var journal: LocalState?
     private var generation = UUID()
@@ -414,6 +415,29 @@ struct Interaction: Identifiable {
             guard attachments.count + files.count <= 8 else { throw ClientError.responseTooLarge }
             attachments += files
         } catch { report(error) }
+    }
+    func addImages(_ data: [Data], sessionID: String?) async {
+        guard !isSending, selectedSessionID == sessionID else { return }
+        let owner = generation
+        do {
+            guard attachments.count + data.count <= 8 else { throw ClientError.responseTooLarge }
+            let files = try await Task.detached(priority: .userInitiated) {
+                try data.map { bytes in
+                    DraftAttachment(filename: "photo-\(UUID().uuidString.prefix(8)).jpg", mimeType: "image/jpeg",
+                                    data: try ImagePreparation.jpeg(bytes))
+                }
+            }.value
+            guard owner == generation, selectedSessionID == sessionID, !isSending else { return }
+            guard attachments.count + files.count <= 8 else { throw ClientError.responseTooLarge }
+            attachments += files
+        } catch { if owner == generation { report(error) } }
+    }
+    func image(sessionID: String, attachmentID: String) async throws -> Data {
+        guard let client else { throw ClientError.offline }
+        let owner = generation, epoch = dataEpoch
+        let data = try await client.image(sessionID: sessionID, attachmentID: attachmentID)
+        guard owner == generation, epoch == dataEpoch else { throw ClientError.expiredGeneration }
+        return data
     }
     func report(_ error: any Error) {
         if error is CancellationError { return }

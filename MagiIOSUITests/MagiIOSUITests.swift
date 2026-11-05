@@ -107,6 +107,23 @@ import XCTest
         XCTAssertFalse(app.alerts.firstMatch.exists)
     }
 
+    func testReceivedImageAndAttachmentMenu() async throws {
+        _ = try await fixture("reset")
+        _ = try await fixture("images")
+        let app = start()
+        connect(app)
+        app.buttons["session.fixture-session"].tap()
+        let image = app.buttons["chat.image"]
+        XCTAssertTrue(image.waitForExistence(timeout: 10))
+        image.tap()
+        XCTAssertTrue(app.buttons["Done"].waitForExistence(timeout: 5))
+        app.buttons["Done"].tap()
+        app.buttons["chat.attach"].tap()
+        XCTAssertTrue(app.buttons["Photo Library"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["Take Photo"].exists)
+        XCTAssertTrue(app.buttons["Choose File"].exists)
+    }
+
     func testChineseInterface() async throws {
         _ = try await fixture("reset")
         let app = start(language: "zh-Hans")

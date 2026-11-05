@@ -3,7 +3,10 @@ import Foundation
 public struct HTTPResponse: Sendable {
     public var status: Int
     public var data: Data
-    public init(status: Int, data: Data) { self.status = status; self.data = data }
+    public var contentType: String
+    public init(status: Int, data: Data, contentType: String = "application/json") {
+        self.status = status; self.data = data; self.contentType = contentType
+    }
 }
 
 public struct EventConnection: Sendable {
@@ -46,11 +49,11 @@ public final class URLSessionTransport: HTTPTransport, Sendable {
         var data = Data()
         do {
             for try await byte in bytes {
-                guard data.count < 8 * 1024 * 1024 else { throw ClientError.responseTooLarge }
+                guard data.count < 20 * 1024 * 1024 else { throw ClientError.responseTooLarge }
                 data.append(byte)
             }
         } catch { bytes.task.cancel(); throw error }
-        return HTTPResponse(status: http.statusCode, data: data)
+        return HTTPResponse(status: http.statusCode, data: data, contentType: http.value(forHTTPHeaderField: "Content-Type") ?? "")
     }
 
     public func events(_ request: URLRequest) async throws -> EventConnection {

@@ -3,7 +3,7 @@
 "action.ok" = "OK";
 "action.refresh" = "Refresh";
 "action.retry" = "Retry";
-"attachment.add" = "Attach a file";
+"attachment.add" = "Add attachment";
 "attachment.file" = "Attachment";
 "attachment.remove" = "Remove attachment";
 "chat.older" = "Load earlier messages";
@@ -96,3 +96,14 @@
 "turn.merged" = "Turn merged";
 "turn.discarded" = "Turn discarded";
 "turn.superseded" = "Replaced by a newer turn";
+
+"attachment.photos" = "Photo Library";
+"attachment.camera" = "Take Photo";
+"attachment.files" = "Choose File";
+"attachment.camera.denied" = "Allow camera access in Settings to take a photo.";
+"attachment.image" = "Image";
+"attachment.preview" = "View Image";
+"attachment.retry" = "Reload Image";
+"attachment.loading" = "Loading images";
+"action.settings" = "Settings";
+"action.cancel" = "Cancel";
