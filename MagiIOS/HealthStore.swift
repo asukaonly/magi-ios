@@ -30,7 +30,12 @@ import MagiCore
             state = try await journal.read()
             if let stored = try keychain.load() {
                 guard stored.serverID == credential.serverID, stored.address == credential.address else { throw ClientError.identityChanged }
-                collector = MagiClient(credential: stored)
+                if state.connectionID != nil {
+                    collector = MagiClient(credential: stored)
+                } else {
+                    // Keychain can survive app reinstallation; its old scope cannot own a new connection.
+                    try keychain.remove()
+                }
             }
             loaded = true
         } catch { self.error = "error.storage" }
