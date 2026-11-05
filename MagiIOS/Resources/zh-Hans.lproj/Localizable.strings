@@ -14,7 +14,7 @@
 "chat.status" = "进展";
 "chat.stop" = "停止";
 "chat.untitled" = "新对话";
-"connection.address" = "https://你的服务地址";
+"connection.address" = "服务地址";
 "connection.code" = "配对码";
 "connection.connect" = "连接 Magi";
 "connection.connecting" = "正在连接…";

@@ -14,7 +14,7 @@
 "chat.status" = "Progress";
 "chat.stop" = "Stop";
 "chat.untitled" = "New conversation";
-"connection.address" = "https://your-magi-server";
+"connection.address" = "Service address";
 "connection.code" = "Pairing code";
 "connection.connect" = "Connect to Magi";
 "connection.connecting" = "Connecting…";
