@@ -13,6 +13,7 @@ import time
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--magi', type=Path, required=True)
 parser.add_argument('--executable', type=Path, required=True)
+parser.add_argument("--health", action="store_true", help="Install the official health package and verify synthetic observations")
 args = parser.parse_args()
 os.umask(0o077)
 root = Path(__file__).resolve().parents[1]
@@ -43,6 +44,8 @@ with tempfile.TemporaryDirectory(prefix='magi-ios-live-', dir='/tmp') as tempora
                     raise RuntimeError('Temporary service did not become ready')
                 time.sleep(.25)
             env = dict(os.environ, MAGI_TEST_SERVICE=base, MAGI_TEST_PAIRING=operator('pair')['pairing_token'])
+            if args.health:
+                env['MAGI_TEST_HEALTH'] = '1'
             subprocess.run(['swift', 'test', '--package-path', 'Packages/MagiCore', '--filter', 'realServiceClient'],
                            cwd=root, env=env, check=True, timeout=180)
         finally:

@@ -54,10 +54,11 @@ public actor MagiClient {
     }
 
     public func request<T: Decodable & Sendable>(_ type: T.Type, method: String = "GET", path: String,
-        template: String? = nil, query: [String: String] = [:], body: JSONValue? = nil) async throws -> T {
+        template: String? = nil, query: [String: String] = [:], body: JSONValue? = nil, headers: [String: String] = [:]) async throws -> T {
         for attempt in 0...1 {
             var request = URLRequest(url: try credential.address.url(path: path, query: query))
             request.httpMethod = method
+            for (name, value) in headers { request.setValue(value, forHTTPHeaderField: name) }
             request.setValue(try await token(), forHTTPHeaderField: "x-magi-session-token")
             request.setValue(Locale.preferredLanguages.first ?? "en", forHTTPHeaderField: "Accept-Language")
             if let body { request.httpBody = try JSONEncoder().encode(body); request.setValue("application/json", forHTTPHeaderField: "Content-Type") }
@@ -182,5 +183,29 @@ public actor MagiClient {
         if status == 409 { throw ClientError.conflict }
         if status == 503 { throw ClientError.serviceUnavailable }
         guard (200..<300).contains(status) else { throw ClientError.http(status) }
+    }
+}
+
+extension MagiClient {
+    public func memory(view: String, query: String = "", offset: Int = 0) async throws -> Wire.MemoryLibraryPage {
+        try await request(Wire.MemoryLibraryPage.self, path: "/memory/library",
+                          query: ["view": view, "query": query, "offset": String(offset), "limit": "40"])
+    }
+    public func memoryEvidence(id: String) async throws -> Wire.MemoryLibraryItem {
+        try await request(Wire.MemoryLibraryItem.self, path: "/memory/library/evidence/\(ServerAddress.segment(id))",
+                          template: "/memory/library/evidence/{event_id}")
+    }
+    public func correctMemory(_ item: Wire.MemoryLibraryItem, value: String?, requestID: String) async throws {
+        guard let assertion = item.assertion_id else { throw ClientError.invalidContract }
+        var body: [String: JSONValue] = ["request_id": .string(requestID), "target": .object(["kind": .string("assertion"), "id": .string(assertion)]),
+                                         "correction_kind": .string("record_error")]
+        if let value { body["replacement"] = .object(["value": .string(value)]) }
+        if let updated = item.updated_at { body["expected_updated_at"] = .number(updated) }
+        _ = try await request(JSONValue.self, method: "POST", path: "/memory/l2/corrections", body: .object(body))
+    }
+    public func forgetMemory(_ item: Wire.MemoryLibraryItem) async throws {
+        guard item.kind == "event", item.can_delete == true else { throw ClientError.invalidContract }
+        _ = try await request(JSONValue.self, method: "DELETE", path: "/memory/l1/events/\(ServerAddress.segment(item.id))",
+                              template: "/memory/l1/events/{event_id}")
     }
 }

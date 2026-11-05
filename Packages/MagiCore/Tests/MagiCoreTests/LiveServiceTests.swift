@@ -20,6 +20,17 @@ func realServiceClient() async throws {
     #expect(try await client.turn(sessionID: session, turnID: turnID).can_resubmit)
     _ = try await client.request(Wire.ItemPage.self, path: "/personal-tasks")
     _ = try await client.request(Wire.ListResponse.self, path: "/notifications")
+    _ = try await client.memory(view: "about")
+    _ = try await client.memory(view: "events")
+    _ = try await client.request(Wire.PluginsListResponse.self, path: "/plugins")
+    let imageBytes = try Data(contentsOf: URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent("MagiIOS/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon.png"))
+    let image = try await client.upload(sessionID: session, turnID: turnID, filename: "Magi.png", mimeType: "image/png", data: imageBytes)
+    let imageID = try #require(image["attachment_id"].string)
+    #expect(image["kind"].string == "image")
+    // Uploaded bytes remain private until a visible message owns the attachment.
+    await #expect(throws: ClientError.http(404)) {
+        try await client.image(sessionID: session, attachmentID: imageID)
+    }
     let stream = try await client.openEvents(after: nil)
     var decoder = EventStream()
     var received = false
@@ -31,7 +42,7 @@ func realServiceClient() async throws {
     #expect(received)
     let file = try await client.upload(sessionID: session, turnID: turnID, filename: "boundary.txt", mimeType: "text/plain", data: Data("A native client attachment.".utf8))
     #expect(file["attachment_id"].string != nil)
-    let message = Wire.UserMessageRequest(attachments: [try #require(file.object)], client_turn_id: turnID, message: "Native client boundary verification.", session_id: session)
+    let message = Wire.UserMessageRequest(attachments: [try #require(file.object), try #require(image.object)], client_turn_id: turnID, message: "Native client boundary verification.", session_id: session)
     let sent = try await client.send(message)
     // The isolated service intentionally has no provider configuration.
     #expect(!sent.success)
@@ -40,4 +51,5 @@ func realServiceClient() async throws {
     #expect(try await client.history(sessionID: session).messages.isEmpty)
     _ = try await client.request(JSONValue.self, method: "DELETE", path: "/messages/session/\(ServerAddress.segment(session))", template: "/messages/session/{session_id}")
     #expect(try await client.confirmation(sessionID: session, turnID: turnID).status == "concluded")
+    if env["MAGI_TEST_HEALTH"] == "1" { try await verifyHealthService(owner: client, credential: grant) }
 }

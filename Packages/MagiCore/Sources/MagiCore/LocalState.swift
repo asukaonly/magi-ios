@@ -15,6 +15,7 @@ public struct OutgoingTurn: Codable, Sendable, Equatable, Identifiable {
 
 public struct CachedState: Codable, Sendable {
     public var dataEpoch: String?
+    public var selectedSessionID: String?
     public var sessions: [Wire.ChatSessionSummary] = []
     public var transcripts: [String: [Wire.ChatDisplayMessage]] = [:]
     public var outgoing: [OutgoingTurn] = []
@@ -57,10 +58,13 @@ public actor LocalState {
     public func observeGeneration(_ epoch: String) throws -> Bool {
         var next = try read()
         let changed = next.dataEpoch != nil && next.dataEpoch != epoch
-        if changed { next.sessions = []; next.transcripts = [:] }
+        if changed { next.sessions = []; next.transcripts = [:]; next.selectedSessionID = nil }
         next.dataEpoch = epoch
         try commit(next)
         return changed
+    }
+    public func selectSession(_ id: String) throws {
+        var next = try read(); next.selectedSessionID = id; try commit(next)
     }
     public func updateSessions(_ sessions: [Wire.ChatSessionSummary]) throws {
         var next = try read(); next.sessions = Array(sessions.prefix(500)); try commit(next)
