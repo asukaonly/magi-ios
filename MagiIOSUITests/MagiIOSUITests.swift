@@ -18,6 +18,7 @@ import XCTest
         attachment.name = name; attachment.lifetime = .keepAlways; add(attachment)
     }
     private func connect(_ app: XCUIApplication) {
+        app.buttons["welcome.start"].tap()
         let address = app.textFields["connection.address"]
         XCTAssertTrue(address.waitForExistence(timeout: 10))
         address.tap(); address.typeText("http://127.0.0.1:18992")
@@ -30,14 +31,26 @@ import XCTest
         let app = XCUIApplication()
         app.launchArguments = ["--uitesting-reset", "-AppleLanguages", "(en)", "-AppleLocale", "en_US"]
         app.launch()
+        XCTAssertTrue(app.buttons["welcome.start"].waitForExistence(timeout: 10))
+        XCTAssertFalse(app.textFields["connection.address"].exists)
+        capture("Welcome", in: app)
+        app.buttons["welcome.start"].tap()
         let address = app.textFields["connection.address"]
         XCTAssertTrue(address.waitForExistence(timeout: 10))
+        let initialY = address.frame.minY
+        capture("Pairing form", in: app)
         address.tap(); address.typeText("http://example.com")
+        XCTAssertEqual(address.frame.minY, initialY, accuracy: 2)
         let code = app.secureTextFields["connection.code"]
         code.tap(); code.typeText(String(repeating: "a", count: 64))
+        XCTAssertEqual(address.frame.minY, initialY, accuracy: 2)
+        XCTAssertTrue(app.buttons["connection.connect"].isHittable)
         app.buttons["connection.connect"].tap()
         XCTAssertTrue(app.alerts.firstMatch.waitForExistence(timeout: 5))
         XCTAssertTrue(app.alerts.staticTexts.containing(NSPredicate(format: "label CONTAINS %@", "HTTPS")).firstMatch.exists)
+        app.alerts.buttons["OK"].tap()
+        XCTAssertEqual(address.frame.minY, initialY, accuracy: 2)
+        XCTAssertEqual(address.value as? String, "http://example.com")
     }
 
     func testSendWithLostAcknowledgementAndRelaunch() async throws {
@@ -189,7 +202,7 @@ import XCTest
         _ = try await fixture("reset")
         let app = start(language: "zh-Hans")
         XCTAssertTrue(app.staticTexts["每天，多懂你一点。"].waitForExistence(timeout: 8))
-        capture("Chinese connection", in: app)
+        capture("Chinese welcome", in: app)
         connect(app)
         XCTAssertTrue(app.tabBars.buttons["对话"].exists)
         XCTAssertTrue(app.tabBars.buttons["任务"].exists)

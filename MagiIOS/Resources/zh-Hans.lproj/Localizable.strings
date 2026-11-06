@@ -23,7 +23,7 @@
 "connection.disconnect.confirm" = "断开此设备的连接？";
 "connection.disconnect.help" = "这会移除本机凭据、对话缓存和未送达消息，不会删除服务端数据或撤销服务端的设备授权。";
 "connection.disconnected" = "尚未连接";
-"connection.help" = "填写服务的 HTTPS 地址，以及在服务端生成的一次性配对码。";
+"connection.help" = "从 Magi 的设备接入设置复制服务地址和配对码，地址中的端口号也要保留。模拟器可使用 Mac 的本机地址；真实 iPhone 需要可访问的 HTTPS 地址。配对码在 30 分钟后或服务重启后失效。";
 "connection.offline" = "暂时无法连接 · 正在显示已保存的数据";
 "connection.online" = "已连接";
 "connection.privacy" = "对话直接发送到你的服务。连接凭据仅保存在本机的 iOS 钥匙串中。";
@@ -89,6 +89,7 @@
 "turn.waiting_for_permission" = "等待授权";
 "welcome.body" = "把对话和待办带在身边。连接你的 Magi 服务，即可开始。";
 "welcome.title" = "每天，多懂你一点。";
+"welcome.start" = "立即开始";
 "error.model" = "服务端尚未完成模型配置。请在桌面端或服务端设置模型后，重试已保存的消息。";
 "turn.cancelling" = "正在停止…";
 "turn.detaching" = "正在转入后台…";

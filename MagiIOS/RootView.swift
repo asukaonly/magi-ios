@@ -21,7 +21,7 @@ struct RootView: View {
                     TasksView().tabItem { Label("tab.tasks", systemImage: "checkmark.circle") }
                     ExtensionsView().tabItem { Label("tab.extensions", systemImage: "square.grid.2x2") }
                 }.id(store.connectionGeneration).background(Color.canvas)
-            } else { NavigationStack { ConnectionView() } }
+            } else { NavigationStack { WelcomeView() } }
         }
         .sheet(isPresented: $store.showConnection) { NavigationStack { ConnectionView() } }
         .sheet(isPresented: $store.showNotifications) { NotificationsView() }
@@ -34,6 +34,29 @@ struct RootView: View {
 struct MagiMark: View {
     var size: CGFloat = 44
     var body: some View { Image("MagiMark").resizable().scaledToFit().frame(width: size, height: size).accessibilityHidden(true) }
+}
+
+struct WelcomeView: View {
+    var body: some View {
+        VStack(spacing: 0) {
+            Spacer()
+            VStack(spacing: 22) {
+                MagiMark(size: 96)
+                Text("Magi").font(.system(size: 38, weight: .semibold, design: .rounded))
+                Text("welcome.title").font(.title3).foregroundStyle(.secondary).multilineTextAlignment(.center)
+            }
+            Spacer()
+            NavigationLink {
+                ConnectionView()
+            } label: {
+                Text("welcome.start").fontWeight(.semibold).frame(maxWidth: .infinity).padding(.vertical, 17)
+            }
+            .buttonStyle(.plain).background(Color.magi, in: RoundedRectangle(cornerRadius: 18)).foregroundStyle(Color.canvas)
+            .accessibilityIdentifier("welcome.start")
+        }
+        .padding(28).padding(.bottom, 16).frame(maxWidth: 520)
+        .frame(maxWidth: .infinity, maxHeight: .infinity).background(Color.canvas)
+    }
 }
 
 struct ConnectionView: View {
@@ -53,13 +76,6 @@ struct ConnectionView: View {
                     ConnectionStatus(showOnline: true)
                     Button("connection.disconnect", role: .destructive) { confirmDisconnect = true }
                 } else {
-                    VStack(alignment: .leading, spacing: 18) {
-                        MagiMark(size: focused == nil ? 72 : 32)
-                        if focused == nil {
-                            Text("Magi").font(.system(size: 38, weight: .semibold, design: .rounded))
-                            Text("welcome.title").font(.title3).foregroundStyle(.secondary)
-                        }
-                    }.padding(.top, focused == nil ? 48 : 0).padding(.bottom, focused == nil ? 28 : 0)
                     VStack(spacing: 0) {
                         TextField("connection.address", text: $address)
                             .keyboardType(.URL).textContentType(.URL).textInputAutocapitalization(.never).autocorrectionDisabled()
@@ -67,7 +83,7 @@ struct ConnectionView: View {
                             .accessibilityIdentifier("connection.address").padding(18)
                         Divider().padding(.horizontal, 18)
                         SecureField("connection.code", text: $code)
-                            .textInputAutocapitalization(.never).autocorrectionDisabled()
+                            .textContentType(.oneTimeCode).textInputAutocapitalization(.never).autocorrectionDisabled()
                             .focused($focused, equals: .code).submitLabel(.go).onSubmit { connect() }
                             .accessibilityIdentifier("connection.code").padding(18)
                     }.background(Color.paper, in: RoundedRectangle(cornerRadius: 18))
@@ -82,10 +98,11 @@ struct ConnectionView: View {
                     .opacity(address.isEmpty || code.isEmpty ? 0.5 : 1).accessibilityIdentifier("connection.connect")
                     Button("connection.help.title") { help = true }.font(.footnote).foregroundStyle(.secondary).frame(maxWidth: .infinity)
                 }
-            }.padding(28).frame(maxWidth: 520)
+            }.padding(28).frame(maxWidth: 520).frame(maxWidth: .infinity)
         }
         .frame(maxWidth: .infinity).background(Color.canvas)
-        .navigationTitle(store.hasConnection ? L("connection.title") : "").navigationBarTitleDisplayMode(.inline)
+        .scrollDismissesKeyboard(.interactively)
+        .navigationTitle(store.hasConnection ? L("connection.title") : L("connection.connect")).navigationBarTitleDisplayMode(.inline)
         .toolbar { if store.hasConnection { ToolbarItem(placement: .confirmationAction) { Button("action.done") { dismiss() } } } }
         .sheet(isPresented: $help) {
             NavigationStack {
